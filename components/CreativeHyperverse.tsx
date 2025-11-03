@@ -18,7 +18,7 @@ const CreativeHyperverse: React.FC<CreativeHyperverseProps> = ({ onClose }) => {
     const [settings, setSettings] = useState<ImageSettings>({ aspectRatio: '16:9' });
 
     const { manifestation, isGenerating, error, manifestVision, resetManifestation } = useManifestationEngine();
-    const { isPlaying, activeClipIndex, play, stop } = useCinematicPlayer(manifestation);
+    const { isPlaying, activeClipIndex, play, stop } = useCinematicPlayer(manifestation, isGenerating);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -100,7 +100,7 @@ const CreativeHyperverse: React.FC<CreativeHyperverseProps> = ({ onClose }) => {
                             <p className="text-sm italic flex-1 min-w-[200px]"><strong>Vision:</strong> {manifestation.vision}</p>
                             <div className="flex items-center gap-4">
                                 {hasCompletedClips && !isPlaying && (
-                                    <button onClick={play} className="flex items-center gap-2 px-4 py-2 bg-green-500/80 text-white rounded-lg hover:bg-green-500 transition-colors">
+                                    <button onClick={play} disabled={isGenerating} className="flex items-center gap-2 px-4 py-2 bg-green-500/80 text-white rounded-lg hover:bg-green-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                                         <FilmIcon className="w-5 h-5" /> Play Trailer
                                     </button>
                                 )}
