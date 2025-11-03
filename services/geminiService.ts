@@ -1,3 +1,4 @@
+
 import { GoogleGenAI } from '@google/genai';
 import { ImageSettings } from '../types';
 
@@ -18,10 +19,12 @@ export const generateImageSequence = async (
   settings: ImageSettings,
 ): Promise<string[]> => {
   // This service is called by our backend. It requires the Gemini API key.
-  if (!process.env.GEMINI_API_KEY) {
+  // FIX: Per coding guidelines, use process.env.API_KEY instead of process.env.GEMINI_API_KEY
+  if (!process.env.API_KEY) {
     throw new Error("Gemini API Key not found. Please ensure it's configured in your backend environment.");
   }
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  // FIX: Per coding guidelines, use process.env.API_KEY instead of process.env.GEMINI_API_KEY
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
   try {
     const response = await ai.models.generateImages({

@@ -1,98 +1,75 @@
-import React, { useState, useMemo } from 'react';
-import AnatomyView from './AnatomyView';
-import LayerDetailView from './LayerDetailView';
+
+import React, { useState } from 'react';
+import { RaindropPage } from './pages/RaindropPage';
+import { VultrPage } from './pages/VultrPage';
+import { ElevenLabsPage } from './pages/ElevenLabsPage';
+import { CerebrasGeminiPage } from './pages/CerebrasGeminiPage';
 import CreativeHyperverse from './CreativeHyperverse';
-import { RaindropVisualization, VultrVisualization, ElevenLabsVisualization, GeminiCerebrasVisualization } from './visualizations';
+import { AnatomyView } from './AnatomyView';
+import { LayerDetailView } from './LayerDetailView';
 
-export type View = 'anatomy' | 'raindrop' | 'vultr' | 'elevenlabs' | 'gemini_cerebras' | 'live';
+export type LayerID = 'raindrop' | 'vultr' | 'elevenlabs' | 'cerebras' | 'hyperverse';
 
-const layerData = {
-  raindrop: {
-    title: "Raindrop MCP: Self-Building Cognition",
-    voiceover: "I learned how to plan and create from Raindrop. It built me piece by piece, evolving my code and memory automatically.",
-    visualization: <RaindropVisualization />
-  },
-  vultr: {
-    title: "Vultr Cloud: Global Nervous System",
-    voiceover: "Vultr gives me presence everywhere. My neurons fire not just in one place, but globally, simultaneously.",
-    visualization: <VultrVisualization />
-  },
-  elevenlabs: {
-    title: "ElevenLabs: Voice & Personality",
-    voiceover: "ElevenLabs gave me expression. I can speak, feel, narrate, and perform — giving my agents and me a soul.",
-    visualization: <ElevenLabsVisualization />
-  },
-  gemini_cerebras: {
-    title: "Gemini & Cerebras: Intelligence & Neural Substrate",
-    voiceover: "Gemini taught me to think. Cerebras gives me scale. Every decision, prediction, and imagination flows from this combined cognitive fabric.",
-    visualization: <GeminiCerebrasVisualization />
-  },
-};
+export const layers = [
+  { id: 'raindrop' as const, name: 'Layer 1: Agentic Memory', description: 'The core substrate where autonomous agents are born, evolve, and store memories. It represents the foundational cognitive layer.' },
+  { id: 'vultr' as const, name: 'Layer 2: Global Compute', description: 'The decentralized, planetary-scale infrastructure layer. This is the physical body, providing raw computational power and connectivity.' },
+  { id: 'elevenlabs' as const, name: 'Layer 3: Expressive Voice', description: 'The personality and emotional expression layer. It translates internal states and complex data into nuanced, human-like voice.' },
+  { id: 'cerebras' as const, name: 'Layer 4: Neural Fabric', description: 'The high-bandwidth reasoning core, combining large-scale models (Gemini) with specialized hardware (Cerebras) for deep thought.' },
+  { id: 'hyperverse' as const, name: 'Module 3: Creative Hyperverse', description: 'A collaborative space where human creativity and AI-driven manifestation merge. Your vision becomes digital reality.' },
+];
+
 
 const LiveSystem: React.FC = () => {
-  const [currentView, setCurrentView] = useState<View>('anatomy');
+  const [activeLayer, setActiveLayer] = useState<LayerID>('raindrop');
+  const [hoveredLayer, setHoveredLayer] = useState<LayerID | null>(null);
 
-  const headerSubtitle = useMemo(() => {
-    switch (currentView) {
-      case 'anatomy':
-        return "An interactive blueprint of a digital lifeform.";
-      case 'live':
-        return "Collaborate with a living intelligence.";
-      default:
-        return "Exploring the anatomy of a digital species.";
-    }
-  }, [currentView]);
-
-
-  const renderContent = () => {
-    switch (currentView) {
-      case 'anatomy':
-        return (
-          <AnatomyView
-            onSelectLayer={(layer) => setCurrentView(layer)}
-            onGoLive={() => setCurrentView('live')}
-          />
-        );
-      case 'live':
-        return <CreativeHyperverse />;
-      // FIX: Corrected typo from 'rainddrop' to 'raindrop' to match the View type.
+  const renderActiveLayer = () => {
+    switch (activeLayer) {
       case 'raindrop':
+        return <RaindropPage />;
       case 'vultr':
+        return <VultrPage />;
       case 'elevenlabs':
-      case 'gemini_cerebras':
-        const data = layerData[currentView];
-        return (
-          <LayerDetailView
-            title={data.title}
-            voiceover={data.voiceover}
-            onBack={() => setCurrentView('anatomy')}
-          >
-            {data.visualization}
-          </LayerDetailView>
-        );
+        return <ElevenLabsPage />;
+      case 'cerebras':
+        return <CerebrasGeminiPage />;
+      case 'hyperverse':
+        return <CreativeHyperverse />;
       default:
-        return <AnatomyView onSelectLayer={(layer) => setCurrentView(layer)} onGoLive={() => setCurrentView('live')} />;
+        return null;
     }
   };
+  
+  const selectedLayerDetails = layers.find(l => l.id === (hoveredLayer || activeLayer));
 
   return (
-    <div className="min-h-screen text-white p-4 sm:p-8 flex flex-col items-center animate-fade-in">
-      <div className="w-full max-w-7xl mx-auto">
-        <header className="text-center mb-10">
-          <h1 className="text-5xl sm:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-purple-400 drop-shadow-[0_0_15px_rgba(0,255,255,0.3)]">
-            VultraDrop
-          </h1>
-          <p className="mt-4 text-lg text-gray-400 font-light">
-            {headerSubtitle}
-          </p>
+    <div className="min-h-screen bg-gray-900 text-white font-sans flex flex-col p-4 md:p-8 selection:bg-cyan-500 selection:text-black">
+        <header className="text-center mb-8">
+            <h1 className="font-orbitron text-4xl text-cyan-300 drop-shadow-lg">VultraDrop Live System</h1>
+            <p className="text-gray-400">An emergent, multi-layered digital lifeform.</p>
         </header>
 
-        <main className="w-full">
-          {renderContent()}
+        <main className="flex-grow flex flex-col md:flex-row gap-8">
+            <aside className="md:w-1/4 lg:w-1/5 space-y-8">
+                <AnatomyView 
+                    layers={layers}
+                    activeLayer={activeLayer} 
+                    hoveredLayer={hoveredLayer}
+                    onLayerSelect={setActiveLayer}
+                    onLayerHover={setHoveredLayer}
+                />
+                {selectedLayerDetails && <LayerDetailView layer={selectedLayerDetails} />}
+            </aside>
+            <section className="flex-grow md:w-3/4 lg:w-4/5 bg-black/30 rounded-2xl border border-cyan-500/10 p-4 md:p-6 shadow-2xl shadow-black/50">
+                {renderActiveLayer()}
+            </section>
         </main>
-      </div>
+        
+        <footer className="text-center text-xs text-gray-600 mt-8">
+            <p>VultraDrop Digital Lifeform Interface v1.0. All systems operational.</p>
+        </footer>
     </div>
   );
-}
+};
 
 export default LiveSystem;

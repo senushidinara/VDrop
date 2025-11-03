@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { generateImageSequence } from '../services/geminiService';
 import { generateNarration } from '../services/elevenLabsService';
@@ -14,7 +15,8 @@ const CreativeHyperverse: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
 
     const handleGenerateClick = async () => {
-        if (!process.env.GEMINI_API_KEY || !process.env.ELEVENLABS_API_KEY) {
+        // FIX: Per coding guidelines, use process.env.API_KEY instead of process.env.GEMINI_API_KEY for the Gemini API key.
+        if (!process.env.API_KEY || !process.env.ELEVENLABS_API_KEY) {
             setError('API keys for Gemini and ElevenLabs must be configured in your environment to awaken the live system.');
             return;
         }
