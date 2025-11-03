@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 
 const script = [
@@ -91,7 +90,8 @@ const PodcastPlayer: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     const totalDuration = script.reduce((sum, line) => sum + line.duration, 0);
     const [progress, setProgress] = useState(0);
     
-    const intervalRef = useRef<number>();
+    // FIX: Initialize useRef with null to satisfy TypeScript rule requiring an initial value.
+    const intervalRef = useRef<number | null>(null);
 
     useEffect(() => {
         let lineIndex = 0;
@@ -119,8 +119,8 @@ const PodcastPlayer: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         intervalRef.current = window.setInterval(tick, 100);
 
         return () => {
-            // FIX: The error "Expected 1 arguments, but got 0" likely stems from a strict check where `undefined` is not considered a valid argument, even though `clearInterval` can handle it. Guarding the call ensures we only pass a valid number.
-            if (intervalRef.current !== undefined) {
+            // FIX: Guarding the call ensures we only pass a valid number to clearInterval.
+            if (intervalRef.current !== null) {
                 window.clearInterval(intervalRef.current);
             }
         };
@@ -129,31 +129,33 @@ const PodcastPlayer: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     const togglePlay = () => setIsPlaying(p => !p);
 
     return (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-lg z-50 flex items-center justify-center animate-fade-in">
-            <div className="w-full max-w-2xl bg-[var(--theme-bg-secondary)] rounded-2xl shadow-2xl p-8 border border-[var(--theme-border-color)]">
-                <div className="flex justify-between items-center mb-4">
-                    <h2 className="font-orbitron text-xl text-[var(--theme-text-title)]">The Genesis Story</h2>
-                    <button onClick={onClose} className="text-2xl text-gray-500 hover:text-white">&times;</button>
-                </div>
-                
-                <AudioVisualizer isPlaying={isPlaying} />
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-lg z-50 flex items-center justify-center animate-fade-in p-4">
+            <div className="w-full max-w-2xl bg-[var(--theme-bg-secondary)] rounded-2xl shadow-2xl p-8 border border-[var(--theme-border-color)] panel-corners">
+               <div>
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="font-orbitron text-xl text-[var(--theme-text-title)]">The Genesis Story</h2>
+                        <button onClick={onClose} className="text-2xl text-gray-500 hover:text-white">&times;</button>
+                    </div>
+                    
+                    <AudioVisualizer isPlaying={isPlaying} />
 
-                <div className="text-center my-6 h-20 flex items-center justify-center px-4">
-                    <TypewriterText text={script[currentLine].text} />
-                </div>
+                    <div className="text-center my-6 h-20 flex items-center justify-center px-4">
+                        <TypewriterText text={script[currentLine].text} />
+                    </div>
 
-                <div className="w-full bg-gray-700/50 rounded-full h-2 mb-6">
-                    <div className="bg-gradient-to-r from-[var(--theme-accent1)] to-[var(--theme-accent2)] h-2 rounded-full" style={{ width: `${progress}%`, transition: 'width 0.1s linear' }}></div>
-                </div>
+                    <div className="w-full bg-gray-700/50 rounded-full h-2 mb-6">
+                        <div className="bg-gradient-to-r from-[var(--theme-accent1)] to-[var(--theme-accent2)] h-2 rounded-full" style={{ width: `${progress}%`, transition: 'width 0.1s linear' }}></div>
+                    </div>
 
-                <div className="flex items-center justify-center gap-6">
-                    <button onClick={togglePlay} className="w-16 h-16 bg-gradient-to-br from-[var(--theme-accent1)] to-[var(--theme-accent2)] rounded-full flex items-center justify-center text-white shadow-lg transition-transform hover:scale-110">
-                        {isPlaying ? 
-                            <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20"><path d="M5 4h3v12H5V4zm7 0h3v12h-3V4z"/></svg> :
-                            <svg className="w-8 h-8 ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M4.018 14.382A1 1 0 013 13.518V6.482a1 1 0 011.504-.864l7.018 3.51a1 1 0 010 1.728l-7.018 3.51a1 1 0 01-.486.13z"/></svg>
-                        }
-                    </button>
-                </div>
+                    <div className="flex items-center justify-center gap-6">
+                        <button onClick={togglePlay} className="w-16 h-16 bg-gradient-to-br from-[var(--theme-accent1)] to-[var(--theme-accent2)] rounded-full flex items-center justify-center text-white shadow-lg transition-transform hover:scale-110">
+                            {isPlaying ? 
+                                <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20"><path d="M5 4h3v12H5V4zm7 0h3v12h-3V4z"/></svg> :
+                                <svg className="w-8 h-8 ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M4.018 14.382A1 1 0 013 13.518V6.482a1 1 0 011.504-.864l7.018 3.51a1 1 0 010 1.728l-7.018 3.51a1 1 0 01-.486.13z"/></svg>
+                            }
+                        </button>
+                    </div>
+               </div>
             </div>
         </div>
     );

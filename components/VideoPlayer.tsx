@@ -171,8 +171,8 @@ const ClipDisplay: React.FC<ClipDisplayProps> = ({ clip, onDownload }) => {
   };
 
   return (
-    <div className="aspect-video bg-black/50 rounded-lg shadow-lg overflow-hidden border border-[var(--theme-border-color)] transition-all duration-300 hover:shadow-2xl hover:shadow-[var(--theme-glow-light)] hover:border-[var(--theme-accent1)]">
-      {renderContent()}
+    <div className="panel-corners aspect-video bg-black/50 rounded-lg shadow-lg overflow-hidden border border-[var(--theme-border-color)] transition-all duration-300 hover:shadow-2xl hover:shadow-[var(--theme-glow-light)] hover:border-[var(--theme-accent1)]">
+        <div className="w-full h-full">{renderContent()}</div>
     </div>
   );
 };
