@@ -9,24 +9,33 @@ import { FilmIcon, RefreshIcon } from './IconComponents';
 interface ManifestationPlayerProps {
     manifestation: Manifestation | null;
     onPlaybackChange: (isPlaying: boolean, activeIndex: number) => void;
+    currentlyPlayingIndex: number;
+    setCurrentlyPlayingIndex: React.Dispatch<React.SetStateAction<number>>;
+    isPlaying: boolean;
+    setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const ManifestationPlayer: React.FC<ManifestationPlayerProps> = ({ manifestation, onPlaybackChange }) => {
+const ManifestationPlayer: React.FC<ManifestationPlayerProps> = ({ 
+    manifestation, 
+    onPlaybackChange,
+    currentlyPlayingIndex,
+    setCurrentlyPlayingIndex,
+    isPlaying,
+    setIsPlaying
+}) => {
     const audioRef = useRef<HTMLAudioElement>(null);
     const musicRef = useRef<HTMLAudioElement>(null);
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [currentlyPlayingIndex, setCurrentlyPlayingIndex] = useState(0);
 
-    // Effect to control master play/pause
+    // Effect to control master play/pause and sync sources
     useEffect(() => {
         const audioEl = audioRef.current;
         const musicEl = musicRef.current;
         if (!audioEl || !musicEl || !manifestation) return;
 
         if (isPlaying) {
-            // Start or resume playback
-            if (audioEl.src !== manifestation.clips[currentlyPlayingIndex]?.narrationUrl) {
-                audioEl.src = manifestation.clips[currentlyPlayingIndex]?.narrationUrl || '';
+            const currentClip = manifestation.clips[currentlyPlayingIndex];
+            if (currentClip?.narrationUrl && audioEl.src !== currentClip.narrationUrl) {
+                audioEl.src = currentClip.narrationUrl;
             }
             audioEl.play().catch(e => console.error("Audio play failed:", e));
             musicEl.play().catch(e => console.error("Music play failed:", e));
@@ -40,42 +49,31 @@ const ManifestationPlayer: React.FC<ManifestationPlayerProps> = ({ manifestation
     // Effect to handle the sequence of narration
     useEffect(() => {
         const audioEl = audioRef.current;
-        if (!audioEl) return;
+        if (!audioEl || !manifestation) return;
 
         const handleTrackEnd = () => {
-            setCurrentlyPlayingIndex(prevIndex => {
-                if (manifestation && prevIndex < manifestation.clips.length - 1) {
-                    const nextIndex = prevIndex + 1;
-                    // Preload and play next track
-                     if (audioRef.current) {
-                        audioRef.current.src = manifestation.clips[nextIndex].narrationUrl || '';
-                        audioRef.current.play();
-                    }
-                    return nextIndex;
-                }
+            if (currentlyPlayingIndex < manifestation.clips.length - 1) {
+                setCurrentlyPlayingIndex(prevIndex => prevIndex + 1);
+            } else {
                 // End of sequence
                 setIsPlaying(false);
-                return 0; 
-            });
+                setCurrentlyPlayingIndex(0); 
+            }
         };
 
         audioEl.addEventListener('ended', handleTrackEnd);
         return () => audioEl.removeEventListener('ended', handleTrackEnd);
-    }, [manifestation]);
+    }, [manifestation, currentlyPlayingIndex, setIsPlaying, setCurrentlyPlayingIndex]);
 
 
     const handlePlayPause = () => {
         if (!manifestation || manifestation.clips.some(c => !c.narrationUrl)) return;
         
-        if (isPlaying) {
-            setIsPlaying(false);
-        } else {
-            // If starting from a paused state or from the beginning
-             if (currentlyPlayingIndex >= (manifestation?.clips.length ?? 0) -1 && audioRef.current?.ended) {
-                setCurrentlyPlayingIndex(0);
-            }
-            setIsPlaying(true);
+        // If at the end, reset to the beginning before playing
+        if (currentlyPlayingIndex >= (manifestation?.clips.length - 1) && audioRef.current?.ended) {
+            setCurrentlyPlayingIndex(0);
         }
+        setIsPlaying(prev => !prev);
     }
 
     if (!manifestation) return null;
@@ -113,7 +111,11 @@ const CreativeHyperverse: React.FC<{onClose: () => void}> = ({ onClose }) => {
     const [isGenerating, setIsGenerating] = useState<boolean>(false);
     const [generationStep, setGenerationStep] = useState('');
     const [error, setError] = useState<string | null>(null);
+    
+    // State for the player is now managed here
     const [activeClipIndex, setActiveClipIndex] = useState(0);
+    const [isPlaying, setIsPlaying] = useState(false);
+
 
     const handleGenerateClick = async () => {
         if (!process.env.API_KEY || !process.env.ELEVENLABS_API_KEY) {
@@ -125,12 +127,10 @@ const CreativeHyperverse: React.FC<{onClose: () => void}> = ({ onClose }) => {
             return;
         }
         
-        setError(null);
-        setIsGenerating(true);
-        setManifestation(null);
-        setActiveClipIndex(0);
+        handleReset(); // Reset state before new generation
 
         try {
+            setIsGenerating(true);
             // Step 1: Generate Script
             setGenerationStep('Writing the narrative script...');
             const scriptLines = await generateScript(vision);
@@ -174,10 +174,12 @@ const CreativeHyperverse: React.FC<{onClose: () => void}> = ({ onClose }) => {
         setError(null);
         setIsGenerating(false);
         setGenerationStep('');
+        setIsPlaying(false);
         setActiveClipIndex(0);
     };
     
-    const handlePlaybackChange = (isPlaying: boolean, activeIndex: number) => {
+    const handlePlaybackChange = (playing: boolean, activeIndex: number) => {
+        // This callback could be used for other effects if needed
         setActiveClipIndex(activeIndex);
     };
 
@@ -233,7 +235,14 @@ const CreativeHyperverse: React.FC<{onClose: () => void}> = ({ onClose }) => {
                                         </p>
                                     ))}
                                 </div>
-                                <ManifestationPlayer manifestation={manifestation} onPlaybackChange={handlePlaybackChange} />
+                                <ManifestationPlayer 
+                                    manifestation={manifestation} 
+                                    onPlaybackChange={handlePlaybackChange} 
+                                    currentlyPlayingIndex={activeClipIndex}
+                                    setCurrentlyPlayingIndex={setActiveClipIndex}
+                                    isPlaying={isPlaying}
+                                    setIsPlaying={setIsPlaying}
+                                />
                             </div>
                         )}
                     </div>

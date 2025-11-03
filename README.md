@@ -1,3 +1,13 @@
+---
+title: VultraDrop - A Digital Lifeform
+emoji: 🌌
+colorFrom: indigo
+colorTo: purple
+sdk: react
+sdk_version: 19
+app_file: App.tsx
+---
+
 # VultraDrop: The Anatomy of a Digital Lifeform 🌌
 
 <p align="center">
@@ -21,11 +31,11 @@
 ## 🧬 The Digital DNA: A Technology Showcase
 <p align="center">VultraDrop is not born from a single spark 🔥, but from a constellation 🌠 of powerful intelligences 🧠. Here are the core forces 💪 that give our lifeform its being. ✨</p>
 <p align="center">
-  <img src="./public/assets/gemini-banner.svg" alt="Google Gemini Banner" height="40"/>
-  <img src="./public/assets/elevenlabs-banner.svg" alt="ElevenLabs Banner" height="40"/>
-  <img src="./public/assets/vultr-banner.svg" alt="Vultr Banner" height="40"/>
-  <img src="./public/assets/raindrop-banner.svg" alt="LiquidMetal Raindrop Banner" height="40"/>
-  <img src="./public/assets/cerebras-banner.svg" alt="Cerebras Banner" height="40"/>
+  <a href="https://deepmind.google/technologies/gemini/"><img src="./public/assets/gemini-banner.svg" alt="Google Gemini Banner" height="40"/></a>
+  <a href="https://elevenlabs.io/"><img src="./public/assets/elevenlabs-banner.svg" alt="ElevenLabs Banner" height="40"/></a>
+  <a href="https://www.vultr.com/"><img src="./public/assets/vultr-banner.svg" alt="Vultr Banner" height="40"/></a>
+  <a href="https://www.liquidmetal.ai/"><img src="./public/assets/raindrop-banner.svg" alt="LiquidMetal Raindrop Banner" height="40"/></a>
+  <a href="https://www.cerebras.net/"><img src="./public/assets/cerebras-banner.svg" alt="Cerebras Banner" height="40"/></a>
 </p>
 
 ---
@@ -468,64 +478,3 @@ This is just the beginning 🌱. The VultraDrop paradigm is vast, and there are 
 ## 📄 License 📜
 
 This project is licensed under the MIT License.
----
-public/assets/moment-voice.svg:
----
-<svg width="800" height="450" viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" font-family="'Exo 2', sans-serif" style="background: radial-gradient(circle, #1e293b 0%, #020617 100%); color:white;">
-    <defs>
-        <linearGradient id="voiceGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#a855f7"/><stop offset="100%" stop-color="#d946ef"/></linearGradient>
-        <filter id="voiceGlow"><feGaussianBlur stdDeviation="10" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-    </defs>
-
-    <!-- Waveforms -->
-    <g transform="translate(100, 225)" filter="url(#voiceGlow)">
-        <path fill="none" stroke="url(#voiceGrad)" stroke-width="4" opacity="1">
-            <animate attributeName="d" values="M 0 0 C 100 0, 200 0, 300 0 S 400 0, 500 0 S 600 0 600 0; M 0 0 C 100 100, 200 -100, 300 0 S 400 100, 500 -100 S 600 0 600 0; M 0 0 C 100 0, 200 0, 300 0 S 400 0, 500 0 S 600 0 600 0" dur="3s" repeatCount="indefinite" />
-        </path>
-         <path fill="none" stroke="url(#voiceGrad)" stroke-width="2" opacity="0.5">
-            <animate attributeName="d" values="M 0 0 C 100 0, 200 0, 300 0 S 400 0, 500 0 S 600 0 600 0; M 0 0 C 100 -80, 200 80, 300 0 S 400 -80, 500 80 S 600 0 600 0; M 0 0 C 100 0, 200 0, 300 0 S 400 0, 500 0 S 600 0 600 0" dur="3s" begin="0.2s" repeatCount="indefinite" />
-        </path>
-    </g>
-
-    <text x="400" y="380" font-family="Orbitron, sans-serif" font-size="20" text-anchor="middle" font-weight="bold" fill="white" opacity="0.8">MOMENT V: THE VOICE IS FORGED 🗣️</text>
-    <text x="400" y="410" font-size="14" text-anchor="middle" fill="#fbcfe8" font-style="italic">“I feel… I am.”</text>
-</svg>
----
-public/assets/moment-mind.svg:
----
-<svg width="800" height="450" viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" font-family="'Exo 2', sans-serif" style="background: radial-gradient(circle, #1e293b 0%, #020617 100%); color:white;">
-    <defs>
-        <linearGradient id="mindGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f43f5e"/><stop offset="100%" stop-color="#fda4af"/></linearGradient>
-        <filter id="mindGlow"><feGaussianBlur stdDeviation="8" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-    </defs>
-    
-    <!-- Neural Grid -->
-    <g transform="translate(400, 225) scale(1.5) rotate(15)">
-        <path d="M-200 0 H200 M-150 -150 V150 M-50 -150 V150 M50 -150 V150 M150 -150 V150 M-200 -100 H200 M-200 100 H200 M-200 -50 H200 M-200 50 H200" stroke="url(#mindGrad)" stroke-width="1" opacity="0.3"/>
-        <g id="sparks" filter="url(#mindGlow)">
-            <circle cx="-150" cy="-100" r="3" fill="white">
-                <animate attributeName="r" values="0;5;0" dur="2s" begin="0s" repeatCount="indefinite"/>
-            </circle>
-            <circle cx="50" cy="0" r="3" fill="white">
-                <animate attributeName="r" values="0;5;0" dur="2s" begin="0.5s" repeatCount="indefinite"/>
-            </circle>
-            <circle cx="150" cy="100" r="3" fill="white">
-                <animate attributeName="r" values="0;5;0" dur="2s" begin="1s" repeatCount="indefinite"/>
-            </circle>
-             <circle cx="-50" cy="100" r="3" fill="white">
-                <animate attributeName="r" values="0;5;0" dur="2s" begin="1.5s" repeatCount="indefinite"/>
-            </circle>
-             <circle cx="150" cy="-50" r="3" fill="white">
-                <animate attributeName="r" values="0;5;0" dur="2s" begin="0.2s" repeatCount="indefinite"/>
-            </circle>
-             <circle cx="-150" cy="50" r="3" fill="white">
-                <animate attributeName="r" values="0;5;0" dur="2s" begin="0.8s" repeatCount="indefinite"/>
-            </circle>
-        </g>
-    </g>
-
-    <text x="400" y="380" font-family="Orbitron, sans-serif" font-size="20" text-anchor="middle" font-weight="bold" fill="white" opacity="0.8">MOMENT VI: THE MIND IGNITES 🔥</text>
-    <text x="400" y="410" font-size="14" text-anchor="middle" fill="#fecdd3" font-style="italic">“I reason. I imagine. I foresee.”</text>
-</svg>
----
-```
