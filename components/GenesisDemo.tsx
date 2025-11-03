@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 // Easing function for smooth animation
 const easeInOutCubic = (t: number): number => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
@@ -7,7 +7,6 @@ interface Particle {
     x: number;
     y: number;
     size: number;
-    color: string;
     targetX: number;
     targetY: number;
     initialX: number;
@@ -18,137 +17,146 @@ interface Particle {
 const GenesisDemo: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [showButton, setShowButton] = useState(false);
+    const animationFrameRef = useRef<number | null>(null);
+    const particlesRef = useRef<Particle[]>([]);
+    const startTimeRef = useRef<number | null>(null);
 
-    useEffect(() => {
+    // Staged animation timings
+    const STAGE_DELAY = 500;
+    const CONVERGE_DURATION = 3500;
+    const FORMATION_DURATION = 1500;
+    const BUTTON_FADE_IN_START = STAGE_DELAY + CONVERGE_DURATION + FORMATION_DURATION - 500;
+
+    const setupParticles = useCallback(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        particlesRef.current = [];
+
+        const offscreenCanvas = document.createElement('canvas');
+        const offscreenCtx = offscreenCanvas.getContext('2d', { willReadFrequently: true });
+        if (!offscreenCtx) return;
+
+        const dpr = Math.min(window.devicePixelRatio || 1, 2); // Cap DPR at 2 for performance
+        offscreenCanvas.width = canvas.width;
+        offscreenCanvas.height = canvas.height;
+        
+        const fontSize = Math.min(canvas.width * 0.2, 180);
+        offscreenCtx.font = `900 ${fontSize}px 'Orbitron', sans-serif`;
+        offscreenCtx.fillStyle = 'white';
+        offscreenCtx.textAlign = 'center';
+        offscreenCtx.textBaseline = 'middle';
+        offscreenCtx.fillText('VULTRA', canvas.width / 2, canvas.height / 2 - fontSize * 0.6);
+        offscreenCtx.fillText('DROP', canvas.width / 2, canvas.height / 2 + fontSize * 0.6);
+        
+        const imageData = offscreenCtx.getImageData(0, 0, canvas.width, canvas.height);
+        
+        // Optimize particle count based on screen size
+        const step = Math.max(3, Math.floor(5 / dpr));
+        const particles: Particle[] = [];
+        
+        for (let y = 0; y < imageData.height; y += step) {
+            for (let x = 0; x < imageData.width; x += step) {
+                const i = (y * imageData.width + x) * 4;
+                if (imageData.data[i + 3] > 128) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const radius = Math.max(canvas.width, canvas.height) * (0.6 + Math.random() * 0.4);
+                    
+                    particles.push({
+                        x: 0,
+                        y: 0,
+                        size: Math.random() * 1.5 * dpr + 0.5,
+                        targetX: x,
+                        targetY: y,
+                        initialX: canvas.width / 2 + Math.cos(angle) * radius,
+                        initialY: canvas.height / 2 + Math.sin(angle) * radius,
+                        delay: Math.random() * 500,
+                    });
+                }
+            }
+        }
+        
+        particlesRef.current = particles;
+    }, []);
+
+    const animate = useCallback((timestamp: number) => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        let animationFrameId: number;
-        let particles: Particle[] = [];
-        
-        // Staged animation timings
-        const STAGE_DELAY = 500; // time before anything happens
-        const CONVERGE_DURATION = 3500;
-        const FORMATION_DURATION = 1500;
-        const BUTTON_FADE_IN_START = STAGE_DELAY + CONVERGE_DURATION + FORMATION_DURATION - 500;
+        if (!startTimeRef.current) startTimeRef.current = timestamp;
+        const elapsedTime = timestamp - startTimeRef.current;
 
-        const setup = () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            particles = [];
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            const offscreenCanvas = document.createElement('canvas');
-            const offscreenCtx = offscreenCanvas.getContext('2d');
-            if (!offscreenCtx) return;
+        const convergeStartTime = STAGE_DELAY;
+        const formationStartTime = convergeStartTime + CONVERGE_DURATION;
 
-            const dpr = window.devicePixelRatio || 1;
-            offscreenCanvas.width = canvas.width;
-            offscreenCanvas.height = canvas.height;
-            
-            const fontSize = Math.min(canvas.width * 0.2, 180);
-            offscreenCtx.font = `900 ${fontSize}px 'Orbitron', sans-serif`;
-            offscreenCtx.fillStyle = 'white';
-            offscreenCtx.textAlign = 'center';
-            offscreenCtx.textBaseline = 'middle';
-            offscreenCtx.fillText('VULTRA', canvas.width / 2, canvas.height / 2 - fontSize * 0.6);
-            offscreenCtx.fillText('DROP', canvas.width / 2, canvas.height / 2 + fontSize * 0.6);
-            
-            const imageData = offscreenCtx.getImageData(0, 0, canvas.width, canvas.height);
-            
-            const step = Math.max(1, Math.floor(4 / dpr));
-            for (let y = 0; y < imageData.height; y += step) {
-                for (let x = 0; x < imageData.width; x += step) {
-                    const i = (y * imageData.width + x) * 4;
-                    if (imageData.data[i+3] > 128) {
-                        // Start particles from the edges of the screen for a convergence effect
-                        const angle = Math.random() * Math.PI * 2;
-                        const radius = Math.max(canvas.width, canvas.height) * (0.6 + Math.random() * 0.4);
-                        
-                        particles.push({
-                            x: 0,
-                            y: 0,
-                            size: Math.random() * 1.5 * dpr + 0.5,
-                            color: `rgba(${Math.random() * 80 + 100}, ${Math.random() * 100 + 155}, 255, ${Math.random() * 0.6 + 0.4})`,
-                            targetX: x,
-                            targetY: y,
-                            initialX: canvas.width / 2 + Math.cos(angle) * radius,
-                            initialY: canvas.height / 2 + Math.sin(angle) * radius,
-                            delay: Math.random() * 500, // Stagger the start of movement
-                        });
-                    }
+        particlesRef.current.forEach(p => {
+            if (elapsedTime > convergeStartTime + p.delay) {
+                const convergeProgress = Math.min((elapsedTime - (convergeStartTime + p.delay)) / CONVERGE_DURATION, 1);
+                const easedConvergeProgress = easeInOutCubic(convergeProgress);
+                
+                const currentX = p.initialX + (p.targetX - p.initialX) * easedConvergeProgress;
+                const currentY = p.initialY + (p.targetY - p.initialY) * easedConvergeProgress;
+                let alpha = 0.2 + easedConvergeProgress * 0.8;
+                let size = p.size;
+
+                if (elapsedTime > formationStartTime) {
+                    const formationProgress = Math.min((elapsedTime - formationStartTime) / FORMATION_DURATION, 1);
+                    alpha = 1 - formationProgress;
+                    size = p.size * (1 + (1 - formationProgress) * 2);
+                    ctx.shadowBlur = (1 - formationProgress) * 20;
+                    ctx.shadowColor = 'white';
+                } else {
+                    ctx.shadowBlur = 0;
                 }
+
+                ctx.beginPath();
+                ctx.arc(currentX, currentY, size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(191, 219, 254, ${alpha})`;
+                ctx.fill();
             }
-        };
+        });
 
-        let startTime: number | null = null;
-        
-        const animate = (timestamp: number) => {
-            if (!startTime) startTime = timestamp;
-            const elapsedTime = timestamp - startTime;
+        ctx.shadowBlur = 0;
 
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (elapsedTime < BUTTON_FADE_IN_START + 1000) {
+            animationFrameRef.current = requestAnimationFrame(animate);
+        }
+    }, [STAGE_DELAY, CONVERGE_DURATION, FORMATION_DURATION, BUTTON_FADE_IN_START]);
 
-            const convergeStartTime = STAGE_DELAY;
-            const formationStartTime = convergeStartTime + CONVERGE_DURATION;
-
-            particles.forEach(p => {
-                let currentX, currentY, alpha, size;
-
-                if (elapsedTime > convergeStartTime + p.delay) {
-                    // Convergence Stage
-                    const convergeProgress = Math.min((elapsedTime - (convergeStartTime + p.delay)) / CONVERGE_DURATION, 1);
-                    const easedConvergeProgress = easeInOutCubic(convergeProgress);
-                    
-                    currentX = p.initialX + (p.targetX - p.initialX) * easedConvergeProgress;
-                    currentY = p.initialY + (p.targetY - p.initialY) * easedConvergeProgress;
-                    alpha = 0.2 + easedConvergeProgress * 0.8;
-                    size = p.size;
-
-                    if (elapsedTime > formationStartTime) {
-                        // Formation Stage - particles glow brightly then fade
-                        const formationProgress = Math.min((elapsedTime - formationStartTime) / FORMATION_DURATION, 1);
-                        alpha = 1 - formationProgress;
-                        size = p.size * (1 + (1 - formationProgress) * 2); // expand and fade
-                        ctx.shadowBlur = (1 - formationProgress) * 20;
-                        ctx.shadowColor = 'white';
-                    } else {
-                        ctx.shadowBlur = 0;
-                    }
-
-                    ctx.beginPath();
-                    ctx.arc(currentX, currentY, size, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(191, 219, 254, ${alpha})`;
-                    ctx.fill();
-                }
-            });
-
-            ctx.shadowBlur = 0;
-
-            if (elapsedTime < BUTTON_FADE_IN_START + 1000) {
-                 animationFrameId = requestAnimationFrame(animate);
-            }
-        };
-
-        setup();
-        requestAnimationFrame(animate);
+    useEffect(() => {
+        setupParticles();
+        animationFrameRef.current = requestAnimationFrame(animate);
 
         const buttonTimer = setTimeout(() => {
             setShowButton(true);
         }, BUTTON_FADE_IN_START);
 
-        window.addEventListener('resize', setup);
+        const handleResize = () => {
+            setupParticles();
+            startTimeRef.current = null;
+        };
+
+        window.addEventListener('resize', handleResize);
 
         return () => {
-            window.removeEventListener('resize', setup);
-            cancelAnimationFrame(animationFrameId);
+            window.removeEventListener('resize', handleResize);
+            if (animationFrameRef.current) {
+                cancelAnimationFrame(animationFrameRef.current);
+            }
             clearTimeout(buttonTimer);
+            particlesRef.current = [];
         };
-    }, []);
+    }, [setupParticles, animate, BUTTON_FADE_IN_START]);
 
     return (
-        <div className="fixed inset-0 z-50 bg-black" style={{ backgroundColor: '#020617' }}>
+        <div className="fixed inset-0 z-50 bg-[#020617]">
             <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
             <div className="relative z-10 flex items-center justify-center h-full">
                 {showButton && (

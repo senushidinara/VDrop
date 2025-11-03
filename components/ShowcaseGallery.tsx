@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const showcaseImages = [
     { src: '/assets/showcase/IMG_3753.jpeg', alt: 'VultraDrop Rendering Scene 1' },
@@ -19,28 +19,29 @@ interface ShowcaseGalleryProps {
 const ShowcaseGallery: React.FC<ShowcaseGalleryProps> = ({ onClose }) => {
     const [selectedImage, setSelectedImage] = useState<number | null>(null);
 
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'Escape') {
-            if (selectedImage !== null) {
-                setSelectedImage(null);
-            } else {
-                onClose();
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                if (selectedImage !== null) {
+                    setSelectedImage(null);
+                } else {
+                    onClose();
+                }
+            } else if (selectedImage !== null) {
+                if (e.key === 'ArrowRight') {
+                    setSelectedImage((selectedImage + 1) % showcaseImages.length);
+                } else if (e.key === 'ArrowLeft') {
+                    setSelectedImage((selectedImage - 1 + showcaseImages.length) % showcaseImages.length);
+                }
             }
-        } else if (selectedImage !== null) {
-            if (e.key === 'ArrowRight') {
-                setSelectedImage((selectedImage + 1) % showcaseImages.length);
-            } else if (e.key === 'ArrowLeft') {
-                setSelectedImage((selectedImage - 1 + showcaseImages.length) % showcaseImages.length);
-            }
-        }
-    };
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [selectedImage, onClose]);
 
     return (
-        <div 
-            className="fixed inset-0 z-20 bg-[var(--theme-bg-primary)] text-[var(--theme-text-primary)] font-sans flex flex-col p-4 sm:p-6 lg:p-8 animate-fade-in overflow-y-auto"
-            onKeyDown={handleKeyDown}
-            tabIndex={0}
-        >
+        <div className="fixed inset-0 z-20 bg-[var(--theme-bg-primary)] text-[var(--theme-text-primary)] font-sans flex flex-col p-4 sm:p-6 lg:p-8 animate-fade-in overflow-y-auto custom-scrollbar">
             <header className="flex justify-between items-start mb-6">
                 <div>
                     <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-orbitron text-[var(--theme-text-title)] mb-2">
@@ -63,44 +64,32 @@ const ShowcaseGallery: React.FC<ShowcaseGalleryProps> = ({ onClose }) => {
             </header>
 
             <main className="flex-grow">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {showcaseImages.map((image, index) => (
                         <div
                             key={index}
-                            className="group relative aspect-video bg-black/50 rounded-lg overflow-hidden border-2 border-[var(--theme-border-color)] hover:border-[var(--theme-accent1)] transition-all duration-300 hover:shadow-2xl hover:shadow-[var(--theme-glow-light)] cursor-pointer transform hover:scale-105"
+                            className="relative group cursor-pointer overflow-hidden rounded-lg border-2 border-[var(--theme-border-color)] hover:border-[var(--theme-accent1)] transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_var(--theme-glow-light)]"
                             onClick={() => setSelectedImage(index)}
-                            role="button"
-                            tabIndex={0}
-                            aria-label={`View ${image.alt} in fullscreen`}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter' || e.key === ' ') {
-                                    e.preventDefault();
-                                    setSelectedImage(index);
-                                }
-                            }}
                         >
                             <img
                                 src={image.src}
                                 alt={image.alt}
-                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                className="w-full h-64 object-cover"
                                 loading="lazy"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                                <p className="text-white text-sm font-semibold">Scene {index + 1}</p>
+                                <p className="text-white text-sm">{image.alt}</p>
                             </div>
                         </div>
                     ))}
                 </div>
             </main>
 
-            {/* Lightbox Modal */}
+            {/* Lightbox */}
             {selectedImage !== null && (
                 <div
-                    className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4"
+                    className="fixed inset-0 z-30 bg-black/95 flex items-center justify-center p-4 animate-fade-in"
                     onClick={() => setSelectedImage(null)}
-                    role="dialog"
-                    aria-modal="true"
-                    aria-label="Image lightbox"
                 >
                     <button
                         onClick={() => setSelectedImage(null)}
@@ -112,7 +101,6 @@ const ShowcaseGallery: React.FC<ShowcaseGalleryProps> = ({ onClose }) => {
                         </svg>
                     </button>
 
-                    {/* Previous Button */}
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
@@ -126,19 +114,6 @@ const ShowcaseGallery: React.FC<ShowcaseGalleryProps> = ({ onClose }) => {
                         </svg>
                     </button>
 
-                    {/* Image */}
-                    <div className="max-w-6xl max-h-[90vh] w-full" onClick={(e) => e.stopPropagation()}>
-                        <img
-                            src={showcaseImages[selectedImage].src}
-                            alt={showcaseImages[selectedImage].alt}
-                            className="w-full h-full object-contain rounded-lg"
-                        />
-                        <p className="text-white text-center mt-4 text-lg">
-                            Scene {selectedImage + 1} of {showcaseImages.length}
-                        </p>
-                    </div>
-
-                    {/* Next Button */}
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
@@ -151,6 +126,17 @@ const ShowcaseGallery: React.FC<ShowcaseGalleryProps> = ({ onClose }) => {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
                     </button>
+
+                    <img
+                        src={showcaseImages[selectedImage].src}
+                        alt={showcaseImages[selectedImage].alt}
+                        className="max-w-full max-h-full object-contain"
+                        onClick={(e) => e.stopPropagation()}
+                    />
+
+                    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/70 px-4 py-2 rounded-full text-white text-sm">
+                        {selectedImage + 1} / {showcaseImages.length}
+                    </div>
                 </div>
             )}
         </div>

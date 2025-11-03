@@ -1,22 +1,19 @@
-
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 export const ElevenLabsVisualization: React.FC = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const animationFrameRef = useRef<number | null>(null);
 
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
-        
-        let animationFrameId: number;
 
         const setup = () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-        }
-        setup();
+        };
         
         const animate = (time: number) => {
             const width = canvas.width;
@@ -26,13 +23,12 @@ export const ElevenLabsVisualization: React.FC = () => {
             ctx.clearRect(0, 0, width, height);
 
             const gradient = ctx.createLinearGradient(0, 0, width, 0);
-            gradient.addColorStop(0, "var(--theme-accent2)");
-            gradient.addColorStop(0.5, "#ec4899");
-            gradient.addColorStop(1, "var(--theme-accent1)");
+            gradient.addColorStop(0, 'rgba(253, 224, 71, 0.8)');
+            gradient.addColorStop(0.5, 'rgba(236, 72, 153, 0.8)');
+            gradient.addColorStop(1, 'rgba(244, 63, 94, 0.8)');
 
             const stability = 0.5 + Math.sin(time * 0.0001) * 0.4;
             const energy = 0.6 + Math.cos(time * 0.0002) * 0.4;
-
 
             // Draw multiple waves
             for (let j = 1; j <= 5; j++) {
@@ -45,7 +41,7 @@ export const ElevenLabsVisualization: React.FC = () => {
                     const frequency = (5 + (1 - stability) * 10) / (j * 1.5);
                     const amplitude = (10 + energy * (height / 4)) / j;
                     const phase = i / (200 / frequency);
-                    const noise = Math.sin(i * 0.005 * j + time * 0.001) * ( (1 - stability) * 20 );
+                    const noise = Math.sin(i * 0.005 * j + time * 0.001) * ((1 - stability) * 20);
                     const y = centerY + Math.sin(phase + time * 0.002 * j) * amplitude + noise;
 
                     if (i === 0) {
@@ -58,21 +54,22 @@ export const ElevenLabsVisualization: React.FC = () => {
             }
             ctx.globalAlpha = 1;
 
-            animationFrameId = requestAnimationFrame(animate);
+            animationFrameRef.current = requestAnimationFrame(animate);
         };
 
-        animate(0);
-        window.addEventListener('resize', setup);
+        setup();
+        animationFrameRef.current = requestAnimationFrame(animate);
+
+        const handleResize = () => setup();
+        window.addEventListener('resize', handleResize);
 
         return () => {
-            cancelAnimationFrame(animationFrameId)
-            window.removeEventListener('resize', setup);
+            window.removeEventListener('resize', handleResize);
+            if (animationFrameRef.current) {
+                cancelAnimationFrame(animationFrameRef.current);
+            }
         };
     }, []);
 
-    return (
-        <div className="w-full h-full">
-            <canvas ref={canvasRef} className="w-full h-full" />
-        </div>
-    );
+    return <canvas ref={canvasRef} className="w-full h-full" />;
 };
