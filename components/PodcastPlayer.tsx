@@ -118,8 +118,12 @@ const PodcastPlayer: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
         intervalRef.current = window.setInterval(tick, 100);
 
-        // FIX: The misleading error on line 91 likely points to this line. Using `window.clearInterval` ensures the browser's timer API is used, matching `window.setInterval` and avoiding potential type conflicts with a Node.js environment.
-        return () => window.clearInterval(intervalRef.current);
+        return () => {
+            // FIX: The error "Expected 1 arguments, but got 0" likely stems from a strict check where `undefined` is not considered a valid argument, even though `clearInterval` can handle it. Guarding the call ensures we only pass a valid number.
+            if (intervalRef.current !== undefined) {
+                window.clearInterval(intervalRef.current);
+            }
+        };
     }, [isPlaying, totalDuration]);
 
     const togglePlay = () => setIsPlaying(p => !p);
