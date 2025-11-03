@@ -196,7 +196,8 @@ const LiveSystem: React.FC = () => {
             <div className={`min-h-screen relative transition-opacity duration-1000 ${genesisCompleted ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
                 {/* Colorful background hero */}
                 <div className="absolute inset-0 -z-10">
-                    <div className="w-full h-full bg-gradient-to-br from-cyan-600 via-purple-600 to-pink-500 opacity-25"></div>
+                    <div className="w-full h-full bg-gradient-to-br from-[var(--theme-accent1)] via-[var(--theme-accent2)] to-pink-200 opacity-40"></div>
+                    <ParticleTitle />
                 </div>
                 
                 {/* Background Visualizations */}
