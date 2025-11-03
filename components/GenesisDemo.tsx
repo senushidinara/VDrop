@@ -155,18 +155,47 @@ const GenesisDemo: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
         };
     }, [setupParticles, animate, BUTTON_FADE_IN_START]);
 
+    // Make sure clicking the canvas or pressing Enter/Space also triggers awakening
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const handleCanvasClick = () => {
+            if (showButton) {
+                onComplete();
+            }
+        };
+
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (!showButton) return;
+            if (e.key === 'Enter' || e.key === ' ' || e.code === 'Space') {
+                e.preventDefault();
+                onComplete();
+            }
+        };
+
+        canvas.addEventListener('click', handleCanvasClick);
+        window.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            canvas.removeEventListener('click', handleCanvasClick);
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [showButton, onComplete]);
+
     return (
-        <div className="fixed inset-0 z-50 bg-[#020617]">
+        <div className="fixed inset-0 z-50 bg-[#020617]" role="dialog" aria-modal="true" aria-label="Genesis">
             <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
-            <div className="relative z-10 flex items-center justify-center h-full">
+            <div className="relative z-20 flex items-center justify-center h-full">
                 {showButton && (
                     <div className="absolute bottom-20 flex flex-col items-center text-center animate-fade-in">
                         <p className="text-cyan-200 text-lg mb-4 font-light animate-pulse">
                             The lifeform awaits...
                         </p>
                         <button 
+                            type="button"
                             onClick={onComplete}
-                            className="genesis-button py-4 px-12 bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-bold rounded-lg hover:from-cyan-300 hover:to-blue-400 transition-all transform hover:scale-110 font-orbitron text-2xl awaken-button-glow focus:outline-none focus:ring-4 focus:ring-cyan-400/50 shadow-2xl"
+                            className="genesis-button py-4 px-12 bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-bold rounded-lg hover:from-cyan-300 hover:to-blue-400 transition-all transform hover:scale-110 font-orbitron text-2xl awaken-button-glow focus:outline-none focus:ring-4 focus:ring-cyan-400/50 shadow-2xl z-30"
                             aria-label="Awaken the VultraDrop system"
                         >
                             ⚡ AWAKEN ⚡
