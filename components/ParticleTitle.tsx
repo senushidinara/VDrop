@@ -115,7 +115,7 @@ const ParticleTitle: React.FC = () => {
   useEffect(() => setup(), [setup]);
 
   return (
-    <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true" />
+    <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none opacity-80 -z-10" aria-hidden="true" />
   );
 };
 
