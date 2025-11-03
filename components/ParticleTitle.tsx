@@ -74,21 +74,33 @@ const ParticleTitle: React.FC = () => {
 
     let start: number | null = null;
 
+    const colors = ['rgba(125,211,252,', 'rgba(251,207,232,', 'rgba(196,181,253,', 'rgba(255,238,210,'];
+
     const loop = (t: number) => {
       if (!start) start = t;
       const elapsed = t - start;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.globalCompositeOperation = 'lighter';
 
-      particlesRef.current.forEach((p: any) => {
-        const progress = Math.max(0, Math.min(1, (elapsed - p.delay) / 1500));
+      particlesRef.current.forEach((p: any, idx: number) => {
+        const progress = Math.max(0, Math.min(1, (elapsed - p.delay) / 1300));
         const eased = easeInOutCubic(progress);
         const x = p.ox + (p.tx - p.ox) * eased;
         const y = p.oy + (p.ty - p.oy) * eased;
+        const size = p.size * (1 + eased * 1.2);
+
         ctx.beginPath();
-        ctx.fillStyle = `rgba(125,211,252, ${0.15 + eased * 0.9})`;
-        ctx.arc(x, y, p.size, 0, Math.PI * 2);
+        const c = colors[idx % colors.length];
+        const alpha = 0.25 + eased * 0.85;
+        ctx.fillStyle = `${c}${alpha})`;
+        ctx.shadowBlur = 8 + eased * 18;
+        ctx.shadowColor = c.replace('rgba', 'rgba');
+        ctx.arc(x, y, size, 0, Math.PI * 2);
         ctx.fill();
       });
+
+      ctx.shadowBlur = 0;
+      ctx.globalCompositeOperation = 'source-over';
 
       animRef.current = requestAnimationFrame(loop);
     };
