@@ -261,6 +261,9 @@ const LiveSystem: React.FC = () => {
 
                 {/* Manifest Overlay */}
                 <ManifestOverlay progress={progress} message={message} visible={isManifesting} onClose={cancel} />
+
+                {/* Manifest Overlay */}
+                <ManifestOverlay progress={progress} message={message} visible={isManifesting} onClose={cancel} />
             </div>
         </>
     );
