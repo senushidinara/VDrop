@@ -192,7 +192,19 @@ const LiveSystem: React.FC = () => {
     return (
         <>
             {!genesisCompleted && <GenesisDemo onComplete={handleGenesisComplete} />}
-            
+
+            {/* Fallback prominent awaken button (visible if genesis overlay appears but button is unresponsive) */}
+            {!genesisCompleted && (
+                <button
+                    onClick={handleGenesisComplete}
+                    aria-label="Awaken fallback button"
+                    title="Awaken"
+                    className="fixed z-[9999] left-1/2 -translate-x-1/2 bottom-8 py-4 px-8 bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-orbitron text-2xl rounded-full shadow-[0_20px_60px_rgba(13,42,76,0.6)] awaken-button-glow hover:scale-105 transition-transform"
+                >
+                    ⚡ AWAKEN ⚡
+                </button>
+            )}
+
             <div className={`min-h-screen relative transition-opacity duration-1000 ${genesisCompleted ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
                 
                 {/* Background Visualizations */}
