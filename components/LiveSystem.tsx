@@ -262,8 +262,37 @@ const LiveSystem: React.FC = () => {
                 {/* Manifest Overlay */}
                 <ManifestOverlay progress={progress} message={message} visible={isManifesting} onClose={cancel} />
 
-                {/* Manifest Overlay */}
-                <ManifestOverlay progress={progress} message={message} visible={isManifesting} onClose={cancel} />
+                {/* Quick Controls (visible, persistent) */}
+                <div className="fixed left-4 bottom-6 z-[9999] flex flex-col gap-3">
+                    <button
+                        onClick={() => { console.log('Go to raindrop'); setActiveLayer('raindrop'); }}
+                        className="px-3 py-2 bg-white rounded-md shadow-md text-cyan-600"
+                        aria-label="Go to The Garden"
+                    >
+                        Garden
+                    </button>
+                    <button
+                        onClick={() => { console.log('Go to vultr'); setActiveLayer('vultr'); }}
+                        className="px-3 py-2 bg-white rounded-md shadow-md text-cyan-600"
+                        aria-label="Go to The Sinew"
+                    >
+                        Sinew
+                    </button>
+                    <button
+                        onClick={() => { console.log('Go to elevenlabs'); setActiveLayer('elevenlabs'); }}
+                        className="px-3 py-2 bg-white rounded-md shadow-md text-cyan-600"
+                        aria-label="Go to The Voice"
+                    >
+                        Voice
+                    </button>
+                    <button
+                        onClick={() => { console.log('Manifest clicked'); startManifest(); }}
+                        className="px-3 py-2 bg-gradient-to-br from-cyan-300 to-pink-300 rounded-md shadow-md text-white font-semibold"
+                        aria-label="Manifest"
+                    >
+                        MANIFEST
+                    </button>
+                </div>
             </div>
         </>
     );
