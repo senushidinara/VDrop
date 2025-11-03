@@ -1,16 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <svg width="800" height="450" viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" style="background: radial-gradient(circle, #1e293b 0%, #020617 100%); color:white;">
     <defs>
-        <linearGradient id="voiceGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#a855f7"/><stop offset="100%" stop-color="#d946ef"/></linearGradient>
-        <filter id="voiceGlow"><feGaussianBlur stdDeviation="10" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <linearGradient id="voiceGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#a855f7"></stop><stop offset="100%" stop-color="#d946ef"></stop></linearGradient>
+        <filter id="voiceGlow"><feGaussianBlur stdDeviation="10" result="coloredBlur"></feGaussianBlur><feMerge><feMergeNode in="coloredBlur"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge></filter>
     </defs>
 
     <!-- Waveforms -->
     <g transform="translate(100, 225)" filter="url(#voiceGlow)">
         <path fill="none" stroke="url(#voiceGrad)" stroke-width="4" opacity="1">
-            <animate attributeName="d" values="M 0 0 C 100 0 200 0 300 0 S 400 0 500 0 S 600 0 600 0; M 0 0 C 100 100 200 -100 300 0 S 400 100 500 -100 S 600 0 600 0; M 0 0 C 100 0 200 0 300 0 S 400 0 500 0 S 600 0 600 0" dur="3s" repeatCount="indefinite" />
+            <animate attributeName="d" values="M 0 0 C 100 0 200 0 300 0 S 400 0 500 0 S 600 0 600 0; M 0 0 C 100 100 200 -100 300 0 S 400 100 500 -100 S 600 0 600 0; M 0 0 C 100 0 200 0 300 0 S 400 0 500 0 S 600 0 600 0" dur="3s" repeatCount="indefinite"></animate>
         </path>
          <path fill="none" stroke="url(#voiceGrad)" stroke-width="2" opacity="0.5">
-            <animate attributeName="d" values="M 0 0 C 100 0 200 0 300 0 S 400 0 500 0 S 600 0 600 0; M 0 0 C 100 -80 200 80 300 0 S 400 -80 500 80 S 600 0 600 0; M 0 0 C 100 0 200 0 300 0 S 400 0 500 0 S 600 0 600 0" dur="3s" begin="0.2s" repeatCount="indefinite" />
+            <animate attributeName="d" values="M 0 0 C 100 0 200 0 300 0 S 400 0 500 0 S 600 0 600 0; M 0 0 C 100 -80 200 80 300 0 S 400 -80 500 80 S 600 0 600 0; M 0 0 C 100 0 200 0 300 0 S 400 0 500 0 S 600 0 600 0" dur="3s" begin="0.2s" repeatCount="indefinite"></animate>
         </path>
     </g>
 

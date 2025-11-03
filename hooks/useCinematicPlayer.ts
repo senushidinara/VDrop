@@ -95,7 +95,7 @@ export const useCinematicPlayer = (manifestation: Manifestation | null, isGenera
 
         const onError = (e: ErrorEvent) => {
             console.error(`Error playing narration for clip ${activeClipIndex}:`, e);
-            if (isPlayingRef.current) {
+            if (isPlayingRef.current) { // CRITICAL FIX: Add guard to onError
                 advanceToNextClip(); // Advance even if there's an error
             }
         };

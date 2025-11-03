@@ -6,7 +6,7 @@
         </linearGradient>
     </defs>
     <g transform="translate(125, 50)">
-        <path d="M-30,0 a30,30 0 1,0 60,0 a30,30 0 1,0 -60,0" fill="url(#g-grad)">
+        <path d="M-30 0 a 30 30 0 1 0 60 0 a 30 30 0 1 0 -60 0" fill="url(#g-grad)">
             <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="10s" repeatCount="indefinite"/>
         </path>
         <circle cx="0" cy="0" r="15" fill="#1e293b"/>

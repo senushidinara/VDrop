@@ -1,30 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <svg width="800" height="450" viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" style="background: radial-gradient(circle, #1e293b 0%, #020617 100%); color:white;">
     <defs>
-        <linearGradient id="mindGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f43f5e"/><stop offset="100%" stop-color="#fda4af"/></linearGradient>
-        <filter id="mindGlow"><feGaussianBlur stdDeviation="8" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <linearGradient id="mindGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f43f5e"></stop><stop offset="100%" stop-color="#fda4af"></stop></linearGradient>
+        <filter id="mindGlow"><feGaussianBlur stdDeviation="8" result="coloredBlur"></feGaussianBlur><feMerge><feMergeNode in="coloredBlur"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge></filter>
     </defs>
     
     <!-- Neural Grid -->
     <g transform="translate(400, 225) scale(1.5) rotate(15)">
-        <path d="M-200 0 H200 M-150 -150 V150 M-50 -150 V150 M50 -150 V150 M150 -150 V150 M-200 -100 H200 M-200 100 H200 M-200 -50 H200 M-200 50 H200" stroke="url(#mindGrad)" stroke-width="1" opacity="0.3"/>
+        <path d="M-200 0 H200 M-150 -150 V150 M-50 -150 V150 M50 -150 V150 M150 -150 V150 M-200 -100 H200 M-200 100 H200 M-200 -50 H200 M-200 50 H200" stroke="url(#mindGrad)" stroke-width="1" opacity="0.3"></path>
         <g id="sparks" filter="url(#mindGlow)">
             <circle cx="-150" cy="-100" r="3" fill="white">
-                <animate attributeName="r" values="0;5;0" dur="2s" begin="0s" repeatCount="indefinite"/>
+                <animate attributeName="r" values="0;5;0" dur="2s" begin="0s" repeatCount="indefinite"></animate>
             </circle>
             <circle cx="50" cy="0" r="3" fill="white">
-                <animate attributeName="r" values="0;5;0" dur="2s" begin="0.5s" repeatCount="indefinite"/>
+                <animate attributeName="r" values="0;5;0" dur="2s" begin="0.5s" repeatCount="indefinite"></animate>
             </circle>
             <circle cx="150" cy="100" r="3" fill="white">
-                <animate attributeName="r" values="0;5;0" dur="2s" begin="1s" repeatCount="indefinite"/>
+                <animate attributeName="r" values="0;5;0" dur="2s" begin="1s" repeatCount="indefinite"></animate>
             </circle>
              <circle cx="-50" cy="100" r="3" fill="white">
-                <animate attributeName="r" values="0;5;0" dur="2s" begin="1.5s" repeatCount="indefinite"/>
+                <animate attributeName="r" values="0;5;0" dur="2s" begin="1.5s" repeatCount="indefinite"></animate>
             </circle>
              <circle cx="150" cy="-50" r="3" fill="white">
-                <animate attributeName="r" values="0;5;0" dur="2s" begin="0.2s" repeatCount="indefinite"/>
+                <animate attributeName="r" values="0;5;0" dur="2s" begin="0.2s" repeatCount="indefinite"></animate>
             </circle>
              <circle cx="-150" cy="50" r="3" fill="white">
-                <animate attributeName="r" values="0;8;0" dur="2s" begin="0.8s" repeatCount="indefinite"/>
+                <animate attributeName="r" values="0;8;0" dur="2s" begin="0.8s" repeatCount="indefinite"></animate>
             </circle>
         </g>
     </g>
