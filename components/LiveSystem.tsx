@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import CreativeHyperverse from './CreativeHyperverse';
 import ShowcaseGallery from './ShowcaseGallery';
 import { ThemeSwitcher } from './ThemeSwitcher';
-import GenesisDemo from './GenesisDemo';
 import { RaindropLogo, VultrLogo, ElevenLabsLogo, GeminiCerebrasLogo, VultraDropLogo } from './LogoComponents';
 import { FilmIcon, PhotoIcon, ArrowLeftIcon, ArrowRightIcon } from './IconComponents';
 import { RaindropVisualization, VultrVisualization, ElevenLabsVisualization, GeminiCerebrasVisualization } from './visualizations';
@@ -116,8 +115,8 @@ const HUD: React.FC<{ activeLayer: LayerId, setActiveLayer: (layer: LayerId) => 
 };
 
 const LiveSystem: React.FC = () => {
-    const [activeLayer, setActiveLayer] = useState<LayerId>('genesis');
-    const [genesisCompleted, setGenesisCompleted] = useState(false);
+    const [activeLayer, setActiveLayer] = useState<LayerId>('raindrop');
+    const [genesisCompleted, setGenesisCompleted] = useState(true);
     const [showInfo, setShowInfo] = useState(true);
     const infoTimeoutRef = useRef<number | null>(null);
 
@@ -191,21 +190,13 @@ const LiveSystem: React.FC = () => {
 
     return (
         <>
-            {!genesisCompleted && <GenesisDemo onComplete={handleGenesisComplete} />}
-
-            {/* Fallback prominent awaken button (visible if genesis overlay appears but button is unresponsive) */}
-            {!genesisCompleted && (
-                <button
-                    onClick={handleGenesisComplete}
-                    aria-label="Awaken fallback button"
-                    title="Awaken"
-                    className="fixed z-[9999] left-1/2 -translate-x-1/2 bottom-8 py-4 px-8 bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-orbitron text-2xl rounded-full shadow-[0_20px_60px_rgba(13,42,76,0.6)] awaken-button-glow hover:scale-105 transition-transform"
-                >
-                    ⚡ AWAKEN ⚡
-                </button>
-            )}
+            {/* Genesis removed by request — app enters main UI */}
 
             <div className={`min-h-screen relative transition-opacity duration-1000 ${genesisCompleted ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                {/* Colorful background hero */}
+                <div className="absolute inset-0 -z-10">
+                    <div className="w-full h-full bg-gradient-to-br from-cyan-600 via-purple-600 to-pink-500 opacity-25"></div>
+                </div>
                 
                 {/* Background Visualizations */}
                 {backgroundContainer && genesisCompleted && layers.map(layer => (
