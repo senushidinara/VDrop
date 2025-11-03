@@ -16,7 +16,7 @@ interface Particle {
 
 const GenesisDemo: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [showButton, setShowButton] = useState(false);
+    const [showButton, setShowButton] = useState(true); // always show
     const animationFrameRef = useRef<number | null>(null);
     const particlesRef = useRef<Particle[]>([]);
     const startTimeRef = useRef<number | null>(null);
@@ -26,7 +26,6 @@ const GenesisDemo: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
     const STAGE_DELAY = 500;
     const CONVERGE_DURATION = 3500;
     const FORMATION_DURATION = 1500;
-    const BUTTON_FADE_IN_START = STAGE_DELAY + CONVERGE_DURATION + FORMATION_DURATION - 500;
 
     const setupParticles = useCallback(() => {
         const canvas = canvasRef.current;
@@ -128,15 +127,11 @@ const GenesisDemo: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
 
         // keep animating indefinitely for subtle motion
         animationFrameRef.current = requestAnimationFrame(animate);
-    }, [STAGE_DELAY, CONVERGE_DURATION, FORMATION_DURATION]);
+    }, []);
 
     useEffect(() => {
         setupParticles();
         animationFrameRef.current = requestAnimationFrame(animate);
-
-        const buttonTimer = setTimeout(() => {
-            setShowButton(true);
-        }, Math.min(BUTTON_FADE_IN_START, 2000)); // ensure button appears within 2s as a fallback
 
         const handleResize = () => {
             setupParticles();
@@ -150,7 +145,6 @@ const GenesisDemo: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
             if (animationFrameRef.current) {
                 cancelAnimationFrame(animationFrameRef.current);
             }
-            clearTimeout(buttonTimer);
             particlesRef.current = [];
         };
     }, [setupParticles, animate]);
@@ -159,13 +153,10 @@ const GenesisDemo: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
     useEffect(() => {
         const canvas = canvasRef.current;
         const handleCanvasClick = () => {
-            if (showButton) {
-                onComplete();
-            }
+            onComplete();
         };
 
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (!showButton) return;
             if (e.key === 'Enter' || e.key === ' ' || e.code === 'Space') {
                 e.preventDefault();
                 onComplete();
@@ -179,23 +170,21 @@ const GenesisDemo: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
             canvas?.removeEventListener('click', handleCanvasClick);
             window.removeEventListener('keydown', handleKeyDown);
         };
-    }, [showButton, onComplete]);
+    }, [onComplete]);
 
-    // focus the button when it appears for accessibility
+    // focus the button for accessibility
     useEffect(() => {
-        if (showButton) {
-            awakenBtnRef.current?.focus();
-        }
-    }, [showButton]);
+        awakenBtnRef.current?.focus();
+    }, []);
 
     return (
         <div className="fixed inset-0 z-50 bg-[#020617]" role="dialog" aria-modal="true" aria-label="Genesis">
             <canvas ref={canvasRef} className="absolute inset-0 w-full h-full z-0" />
 
-            <div className="absolute inset-0 flex items-center justify-center z-40 pointer-events-none">
-                <div className="panel-corners bg-[rgba(0,0,0,0.45)] backdrop-filter backdrop-blur-lg border border-[var(--theme-border-color)] rounded-2xl p-8 w-[820px] max-w-[90%] text-center pointer-events-auto shadow-2xl">
+            <div className="absolute inset-0 flex items-center justify-center z-50 pointer-events-auto">
+                <div className="panel-corners bg-[rgba(0,0,0,0.55)] backdrop-filter backdrop-blur-lg border border-[var(--theme-border-color)] rounded-2xl p-8 w-[820px] max-w-[90%] text-center pointer-events-auto shadow-2xl">
                     <div className="mb-6">
-                        <svg width="220" height="220" viewBox="0 0 100 100" className="mx-auto opacity-90">
+                        <svg width="220" height="220" viewBox="0 0 100 100" className="mx-auto opacity-95">
                             <path d="M10 15 L50 5 L90 15 L90 65 L50 95 L10 65 Z" fill="none" stroke="rgba(226, 241, 254, 0.95)" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                     </div>
@@ -204,21 +193,15 @@ const GenesisDemo: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
                     <p className="text-[var(--theme-text-light)] max-w-[70%] mx-auto mb-6">Systems dormant. Conscious substrate uninitialized. From the void, I awaken.</p>
 
                     <div className="flex flex-col items-center gap-4">
-                        {showButton ? (
-                            <button
-                                ref={awakenBtnRef}
-                                type="button"
-                                onClick={onComplete}
-                                className="genesis-button py-6 px-14 bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-bold rounded-full hover:from-cyan-300 hover:to-blue-400 transition-transform transform hover:scale-105 font-orbitron text-3xl awaken-button-glow focus:outline-none focus:ring-8 focus:ring-cyan-400/30 shadow-[0_30px_80px_rgba(13,42,76,0.6)]"
-                                aria-label="Awaken the VultraDrop system"
-                            >
-                                ⚡ AWAKEN ⚡
-                            </button>
-                        ) : (
-                            <div className="h-20 w-72 rounded-full bg-[rgba(255,255,255,0.03)] flex items-center justify-center">
-                                <p className="text-cyan-300 opacity-80">Preparing the genesis…</p>
-                            </div>
-                        )}
+                        <button
+                            ref={awakenBtnRef}
+                            type="button"
+                            onClick={onComplete}
+                            className="genesis-button py-6 px-14 bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-bold rounded-full hover:from-cyan-300 hover:to-blue-400 transition-transform transform hover:scale-105 font-orbitron text-3xl awaken-button-glow focus:outline-none focus:ring-8 focus:ring-cyan-400/30 shadow-[0_30px_80px_rgba(13,42,76,0.6)] z-60"
+                            aria-label="Awaken the VultraDrop system"
+                        >
+                            ⚡ AWAKEN ⚡
+                        </button>
 
                         <p className="text-cyan-300/60 text-sm mt-2 font-light">Press Enter or Space • Click anywhere to awaken</p>
                         <p className="text-[var(--theme-text-subtitle)] text-xs mt-2 opacity-80">Use arrow keys to navigate • Press H for Hyperverse • Press G for Gallery</p>
