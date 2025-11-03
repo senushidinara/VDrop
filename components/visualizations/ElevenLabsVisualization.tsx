@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const SoundWave: React.FC<{ energy: number, stability: number }> = ({ energy, stability }) => {
     const points = 100;
@@ -30,6 +30,7 @@ export const ElevenLabsVisualization: React.FC = () => {
     const [energy, setEnergy] = useState(0.75);
     const [, setFrame] = useState(0);
 
+    // FIX: The `useEffect` hook was used without being imported.
     // Animate the sound wave
     useEffect(() => {
         const animationFrame = requestAnimationFrame(() => setFrame(f => f + 1));
