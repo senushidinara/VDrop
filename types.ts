@@ -11,13 +11,12 @@ export interface Clip {
   urls: string[] | null;
   status: ClipStatus;
   scriptText: string; // The specific line of script for this scene
+  narrationUrl: string | null; // URL for this specific scene's narration
 }
 
 // Represents the entire creative output from a single vision
 export interface Manifestation {
     vision: string;
-    fullScript: string;
-    narrationUrl: string | null;
     musicUrl: string | null;
     clips: Clip[];
 }

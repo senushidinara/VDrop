@@ -8,51 +8,64 @@ import { FilmIcon, RefreshIcon, SpeakerWaveIcon } from './IconComponents';
 
 interface ManifestationPlayerProps {
     manifestation: Manifestation | null;
-    setActiveClipIndex: (index: number) => void;
+    onPlaybackChange: (isPlaying: boolean, activeIndex: number) => void;
 }
 
-const ManifestationPlayer: React.FC<ManifestationPlayerProps> = ({ manifestation, setActiveClipIndex }) => {
-    const narrationRef = useRef<HTMLAudioElement>(null);
+const ManifestationPlayer: React.FC<ManifestationPlayerProps> = ({ manifestation, onPlaybackChange }) => {
+    const audioRef = useRef<HTMLAudioElement>(null);
     const musicRef = useRef<HTMLAudioElement>(null);
     const [isPlaying, setIsPlaying] = useState(false);
+    const [currentlyPlayingIndex, setCurrentlyPlayingIndex] = useState(0);
 
+    // Effect to control master play/pause
     useEffect(() => {
-        if (manifestation && isPlaying) {
-            narrationRef.current?.play();
-            musicRef.current?.play();
+        const audioEl = audioRef.current;
+        const musicEl = musicRef.current;
+        if (!audioEl || !musicEl || !manifestation) return;
+
+        if (isPlaying) {
+            audioEl.src = manifestation.clips[currentlyPlayingIndex]?.narrationUrl || '';
+            audioEl.play().catch(e => console.error("Audio play failed:", e));
+            musicEl.play().catch(e => console.error("Music play failed:", e));
         } else {
-            narrationRef.current?.pause();
-            musicRef.current?.pause();
+            audioEl.pause();
+            musicEl.pause();
         }
-    }, [isPlaying, manifestation]);
-
+        onPlaybackChange(isPlaying, currentlyPlayingIndex);
+    }, [isPlaying, currentlyPlayingIndex, manifestation, onPlaybackChange]);
+    
+    // Effect to handle the sequence of narration
     useEffect(() => {
-        const narrationEl = narrationRef.current;
-        if (!narrationEl) return;
+        const audioEl = audioRef.current;
+        if (!audioEl) return;
 
-        const handleTimeUpdate = () => {
-            if (!manifestation) return;
-            const { duration } = narrationEl;
-            if (isNaN(duration) || duration === 0) return;
-            
-            const segmentDuration = duration / manifestation.clips.length;
-            const newIndex = Math.floor(narrationEl.currentTime / segmentDuration);
-            setActiveClipIndex(Math.min(newIndex, manifestation.clips.length - 1));
+        const handleTrackEnd = () => {
+            setCurrentlyPlayingIndex(prevIndex => {
+                if (manifestation && prevIndex < manifestation.clips.length - 1) {
+                    return prevIndex + 1;
+                }
+                // End of sequence
+                setIsPlaying(false);
+                return 0; 
+            });
         };
-        
-        const handleEnded = () => {
+
+        audioEl.addEventListener('ended', handleTrackEnd);
+        return () => audioEl.removeEventListener('ended', handleTrackEnd);
+    }, [manifestation]);
+
+
+    const handlePlayPause = () => {
+        if (isPlaying) {
             setIsPlaying(false);
-            setActiveClipIndex(0); // Reset to first clip on end
+        } else {
+            // If starting from a paused state or from the beginning
+            if (currentlyPlayingIndex >= (manifestation?.clips.length ?? 0) -1) {
+                setCurrentlyPlayingIndex(0);
+            }
+            setIsPlaying(true);
         }
-
-        narrationEl.addEventListener('timeupdate', handleTimeUpdate);
-        narrationEl.addEventListener('ended', handleEnded);
-
-        return () => {
-            narrationEl.removeEventListener('timeupdate', handleTimeUpdate);
-            narrationEl.removeEventListener('ended', handleEnded);
-        };
-    }, [manifestation, setActiveClipIndex]);
+    }
 
     if (!manifestation) return null;
 
@@ -60,7 +73,7 @@ const ManifestationPlayer: React.FC<ManifestationPlayerProps> = ({ manifestation
         <div className="mt-4 p-4 bg-black/50 rounded-lg border border-[var(--theme-border-color)]">
             <div className="flex items-center gap-4">
                 <button 
-                    onClick={() => setIsPlaying(!isPlaying)}
+                    onClick={handlePlayPause}
                     className="w-12 h-12 bg-gradient-to-br from-[var(--theme-accent1)] to-[var(--theme-accent2)] rounded-full flex items-center justify-center text-white shadow-lg transition-transform hover:scale-110"
                 >
                     {isPlaying ? 
@@ -68,12 +81,13 @@ const ManifestationPlayer: React.FC<ManifestationPlayerProps> = ({ manifestation
                         <svg className="w-6 h-6 ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M4.018 14.382A1 1 0 013 13.518V6.482a1 1 0 011.504-.864l7.018 3.51a1 1 0 010 1.728l-7.018 3.51a1 1 0 01-.486.13z"/></svg>
                     }
                 </button>
-                <div className="flex-grow">
-                    <p className="font-orbitron text-lg text-white">Concept Trailer</p>
+                <div className="flex-grow min-w-0">
+                    <p className="font-orbitron text-lg text-white truncate">Concept Trailer</p>
                     <p className="text-sm text-[var(--theme-text-subtitle)] truncate">{manifestation.vision}</p>
                 </div>
             </div>
-            {manifestation.narrationUrl && <audio ref={narrationRef} src={manifestation.narrationUrl} preload="auto" />}
+            {/* Hidden audio players */}
+            <audio ref={audioRef} preload="auto" />
             {manifestation.musicUrl && <audio ref={musicRef} src={manifestation.musicUrl} preload="auto" loop />}
         </div>
     );
@@ -108,30 +122,29 @@ const CreativeHyperverse: React.FC<{onClose: () => void}> = ({ onClose }) => {
             // Step 1: Generate Script
             setGenerationStep('Writing the narrative script...');
             const scriptLines = await generateScript(vision);
-            const fullScript = scriptLines.join(' ');
             
-            const initialClips = scriptLines.map((line, i) => ({ id: i, urls: null, status: 'idle' as const, scriptText: line }));
-            let tempManifestation: Manifestation = { vision, fullScript, narrationUrl: null, musicUrl: null, clips: initialClips };
-            setManifestation(tempManifestation);
-
-            // Step 2: Generate Audio (Narration & Music)
-            setGenerationStep('Giving the vision a voice and soul...');
-            const narrationUrl = await generateNarration(fullScript);
+            const initialClips = scriptLines.map((line, i) => ({ id: i, urls: null, status: 'idle' as const, scriptText: line, narrationUrl: null }));
             const musicUrl = generateMusic(vision); // This is a simulated service
-            tempManifestation = { ...tempManifestation, narrationUrl, musicUrl };
+            let tempManifestation: Manifestation = { vision, musicUrl, clips: initialClips };
             setManifestation(tempManifestation);
 
-            // Step 3: Generate Image Sequences for each clip
-            for (const clip of initialClips) {
-                setGenerationStep(`Manifesting scene ${clip.id + 1} of ${initialClips.length}...`);
-                setManifestation(prev => prev ? ({...prev, clips: prev.clips.map(c => c.id === clip.id ? { ...c, status: 'generating' } : c)}) : null);
+            // Step 2 & 3: Generate Image Sequences & Narration for each clip in parallel
+            for (let i = 0; i < initialClips.length; i++) {
+                setGenerationStep(`Manifesting scene ${i + 1} of ${initialClips.length}...`);
+                setManifestation(prev => prev ? ({...prev, clips: prev.clips.map(c => c.id === i ? { ...c, status: 'generating' } : c)}) : null);
                 
                 try {
-                    const urls = await generateImageSequence(clip.scriptText, settings);
-                    setManifestation(prev => prev ? ({...prev, clips: prev.clips.map(c => c.id === clip.id ? { ...c, urls, status: 'completed' } : c)}) : null);
+                    // Fire off image and audio generation at the same time
+                    const [urls, narrationUrl] = await Promise.all([
+                        generateImageSequence(initialClips[i].scriptText, settings),
+                        generateNarration(initialClips[i].scriptText)
+                    ]);
+                    
+                    setManifestation(prev => prev ? ({...prev, clips: prev.clips.map(c => c.id === i ? { ...c, urls, narrationUrl, status: 'completed' } : c)}) : null);
+
                 } catch (clipError: any) {
-                    console.error(`Error generating clip ${clip.id}:`, clipError.message);
-                    setManifestation(prev => prev ? ({...prev, clips: prev.clips.map(c => c.id === clip.id ? { ...c, status: 'error' } : c)}) : null);
+                    console.error(`Error generating clip ${i}:`, clipError.message);
+                    setManifestation(prev => prev ? ({...prev, clips: prev.clips.map(c => c.id === i ? { ...c, status: 'error' } : c)}) : null);
                 }
             }
 
@@ -151,6 +164,12 @@ const CreativeHyperverse: React.FC<{onClose: () => void}> = ({ onClose }) => {
         setIsGenerating(false);
         setGenerationStep('');
         setActiveClipIndex(0);
+    };
+    
+    const handlePlaybackChange = (isPlaying: boolean, activeIndex: number) => {
+        if (isPlaying) {
+            setActiveClipIndex(activeIndex);
+        }
     };
 
     const handleDownload = async (urls: string[], id: number) => {
@@ -195,11 +214,17 @@ const CreativeHyperverse: React.FC<{onClose: () => void}> = ({ onClose }) => {
                                  <p className="font-orbitron text-[var(--theme-accent2)]">{generationStep}</p>
                              </div>
                         )}
-                        {manifestation?.fullScript && !isGenerating && (
+                        {manifestation && !isGenerating && (
                             <div className="p-4 bg-black/30 rounded-lg flex-grow overflow-y-auto">
                                 <h3 className="font-orbitron text-lg text-[var(--theme-text-title)] mb-2">Generated Narrative</h3>
-                                <p className="text-sm text-gray-300 italic whitespace-pre-wrap">{manifestation.fullScript}</p>
-                                <ManifestationPlayer manifestation={manifestation} setActiveClipIndex={setActiveClipIndex} />
+                                <div className="text-sm text-gray-300 italic space-y-1">
+                                    {manifestation.clips.map((clip, index) => (
+                                        <p key={clip.id} className={`transition-colors duration-300 ${index === activeClipIndex ? 'text-cyan-300' : ''}`}>
+                                            {clip.scriptText}
+                                        </p>
+                                    ))}
+                                </div>
+                                <ManifestationPlayer manifestation={manifestation} onPlaybackChange={handlePlaybackChange} />
                             </div>
                         )}
                     </div>

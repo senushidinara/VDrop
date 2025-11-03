@@ -1,5 +1,16 @@
-
 import React from 'react';
+
+export const VultraDropLogo = ({ className = 'w-10 h-10' }: { className?: string }) => (
+    <svg className={className} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M50 2.5L95.5 26.25V73.75L50 97.5L4.5 73.75V26.25L50 2.5Z" stroke="currentColor" strokeWidth="4"/>
+        <path d="M50 2.5V26.25M50 97.5V73.75" stroke="currentColor" strokeWidth="2"/>
+        <path d="M27.25 37.5L50 50L72.75 37.5" stroke="currentColor" strokeWidth="3"/>
+        <path d="M27.25 62.5L50 75L72.75 62.5" stroke="currentColor" strokeWidth="2" opacity="0.6"/>
+        <path d="M50 50V75" stroke="currentColor" strokeWidth="2"/>
+        <text x="50" y="56" fontFamily="Orbitron, sans-serif" fontSize="12" fill="currentColor" textAnchor="middle" fontWeight="900">V</text>
+    </svg>
+);
+
 
 export const RaindropLogo = ({ className = 'w-6 h-6' }: { className?: string }) => (
     <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

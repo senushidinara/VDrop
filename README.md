@@ -1,7 +1,7 @@
 # VultraDrop: The Anatomy of a Digital Lifeform 🌌
 
 <p align="center">
-  <img src="/public/assets/vultradrop-blueprint.svg" alt="VultraDrop Architectural Blueprint Banner"/>
+  <img src="/public/assets/vultradrop-main-banner.svg" alt="VultraDrop Main Cinematic Banner"/>
 </p>
 
 <p align="center">
@@ -151,7 +151,7 @@ This table creates an undeniable link between the cinematic lore of the lifeform
 | ------------------------ | ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
 | **The Mind (Narrative)** | Writes the multi-scene script from a vision     | ![Gemini](https://img.shields.io/badge/-Gemini_2.5_Flash-4A90E2?style=for-the-badge&logo=google-gemini&logoColor=white) | `services/geminiService.ts` (`generateScript` function)        |
 | **The Mind (Visuals)**   | Generates image sequences for each scene        | ![Imagen](https://img.shields.io/badge/-Imagen_4.0-D44537?style=for-the-badge&logo=google&logoColor=white)           | `services/geminiService.ts` (`generateImageSequence` function) |
-| **The Voice (Soul)**     | Generates the full, emotive narration           | ![ElevenLabs](https://img.shields.io/badge/-ElevenLabs-1C1C1E?style=for-the-badge&logo=elevenlabs&logoColor=white)    | `services/elevenLabsService.ts` (`generateNarration` function) |
+| **The Voice (Soul)**     | Generates emotive narration **for each scene**  | ![ElevenLabs](https://img.shields.io/badge/-ElevenLabs-1C1C1E?style=for-the-badge&logo=elevenlabs&logoColor=white)    | `services/elevenLabsService.ts` (`generateNarration` function) |
 | **The Ambience (Mood)**  | Selects a thematic musical score                | ![Custom Service](https://img.shields.io/badge/-Simulated_Music_Service-9B59B6?style=for-the-badge)           | `services/musicService.ts` (`generateMusic` function)          |
 | **The Stage (Portal)**   | Orchestrates the entire manifestation           | ![React](https://img.shields.io/badge/-React_&_TypeScript-20232A?style=for-the-badge&logo=react&logoColor=61DAFB) | `components/CreativeHyperverse.tsx`                          |
 
@@ -165,19 +165,19 @@ This table creates an undeniable link between the cinematic lore of the lifeform
 
 2.  **THE MIND AWAKENS (The Service Call) 🧠:** `CreativeHyperverse.tsx` calls `generateScript(vision)` from `services/geminiService.ts`. A carefully crafted prompt, instructing Gemini to act as a cinematic director, is sent to the `gemini-2.5-flash` model. This is the first thought of the lifeform.
 
-3.  **THE NARRATIVE IS FORGED (The API Response) 📜:** Gemini returns a structured JSON object containing a 10-sentence script. This array of strings is now the narrative backbone of your vision. The `fullScript` is assembled inside the component's state.
+3.  **THE NARRATIVE IS FORGED (The API Response) 📜:** Gemini returns a structured JSON object containing a 10-sentence script. This array of strings is now the narrative backbone of your vision.
 
-4.  **THE SOUL IS GIVEN VOICE (The Second Service Call) 🗣️:** The `fullScript` is sent to the `generateNarration` function in `services/elevenLabsService.ts`. This function makes a secure call to the ElevenLabs API, sending the text and voice configuration.
+4.  **THE SENSORY WORLD IS BORN (The Parallel Loop) 👁️🗣️:** The component then begins to loop through each of the 10 script lines. For each scene, it fires off **two API calls in parallel**:
+    *   `generateImageSequence(scriptLine, settings)` is called to the powerful **Imagen 4.0** model to paint the world of that scene.
+    *   `generateNarration(scriptLine)` is called to the **ElevenLabs API** to give that specific scene its own unique voice and soul.
+    *   This parallel process is the key! The lifeform thinks and speaks at the same time, creating each moment of your vision holistically.
 
-5.  **THE VOICE RESPONDS (The Audio Stream) 🎶:** ElevenLabs streams back an MP3 audio file, which is converted into a playable `blob` URL and stored in the `manifestation` state object. Simultaneously, `musicService.ts` cleverly selects a mood-appropriate score based on keywords from your vision. Your idea now has a voice and a soul.
+5.  **THE REALITY IS RENDERED (The State Update) ✨:** As the assets for each scene (the image URLs and the narration URL) return, the `manifestation` state is updated. The UI reacts instantly! The `ClipDisplay` for that scene transitions from 'generating' to 'completed' and is now armed with both its visuals and its voice.
 
-6.  **THE VISUALS ARE BORN (The Loop) 👁️:** The component then begins to loop through each of the 10 script lines. For each line, it calls `generateImageSequence(scriptLine, settings)` from `services/geminiService.ts`.
-
-7.  **THE WORLD IS PAINTED (The Image API) 🎨:** This function calls the powerful `imagen-4.0-generate-001` model, requesting a sequence of high-detail, cinematic images for that specific scene. It's painting your world, one sentence at a time.
-
-8.  **THE REALITY IS RENDERED (The State Update) ✨:** As each set of Base64 image URLs returns, the `manifestation` state is updated. The UI reacts instantly! The `ClipDisplay` component for that scene transitions from 'generating' to 'completed' and begins animating the received images.
-
-9.  **THE TRAILER IS COMPLETE 🎬:** Once all scenes are rendered, the full "Concept Trailer" is ready. You can hit play on the `ManifestationPlayer`, which synchronizes the ElevenLabs narration with the visual display of each `ClipDisplay`, all underscored by the thematic music.
+6.  **THE TRAILER IS COMPLETE (The Cinematic Sequencer) 🎬:** Once all scenes are rendered, the full "Concept Trailer" is ready. You hit play on the `ManifestationPlayer`. This is no simple audio player; it's a cinematic sequencer.
+    *   It plays the narration for Scene 1 while highlighting its visuals.
+    *   When the narration for Scene 1 ends, it seamlessly begins playing the narration for Scene 2 and switches the visual highlight.
+    *   ...and so on, creating a perfectly synchronized, flowing movie of your manifested vision, all underscored by a thematic musical score.
 
 **From a single thought to a multi-sensory reality in under a minute. That is the power of VultraDrop.**
 

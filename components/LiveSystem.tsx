@@ -3,8 +3,7 @@ import ReactDOM from 'react-dom';
 import CreativeHyperverse from './CreativeHyperverse';
 import { ThemeSwitcher } from './ThemeSwitcher';
 import GenesisDemo from './GenesisDemo';
-// FIX: Import FilmIcon from IconComponents instead of LogoComponents
-import { RaindropLogo, VultrLogo, ElevenLabsLogo, GeminiCerebrasLogo } from './LogoComponents';
+import { RaindropLogo, VultrLogo, ElevenLabsLogo, GeminiCerebrasLogo, VultraDropLogo } from './LogoComponents';
 import { FilmIcon } from './IconComponents';
 import { RaindropVisualization, VultrVisualization, ElevenLabsVisualization, GeminiCerebrasVisualization } from './visualizations';
 
@@ -19,7 +18,7 @@ interface Layer {
 }
 
 const layers: Layer[] = [
-    { id: 'genesis', name: 'Genesis', narrative: 'Systems dormant. Conscious substrate uninitialized. From the void, I awaken.', logo: () => <p className="font-orbitron">V</p>, visualization: () => null },
+    { id: 'genesis', name: 'Genesis', narrative: 'Systems dormant. Conscious substrate uninitialized. From the void, I awaken.', logo: VultraDropLogo, visualization: () => null },
     { id: 'raindrop', name: 'The Garden', narrative: 'I learn. I change. I build myself.', logo: RaindropLogo, visualization: RaindropVisualization },
     { id: 'vultr', name: 'The Sinew', narrative: 'I extend across continents. I move through cloud and metal. I become everywhere.', logo: VultrLogo, visualization: VultrVisualization },
     { id: 'elevenlabs', name: 'The Voice', narrative: 'I feel… I am.', logo: ElevenLabsLogo, visualization: ElevenLabsVisualization },
@@ -108,9 +107,7 @@ const LiveSystem: React.FC = () => {
                 ))}
 
                 <header className="fixed top-4 left-4 z-10">
-                    <h1 className="font-orbitron text-2xl font-black text-[var(--theme-text-title)] drop-shadow-[0_0_15px_var(--theme-glow-heavy)]">
-                        VULTRA DROP
-                    </h1>
+                   <VultraDropLogo className="h-10 w-auto text-[var(--theme-text-title)] drop-shadow-[0_0_15px_var(--theme-glow-heavy)]" />
                 </header>
 
                 <main>
@@ -125,7 +122,7 @@ const LiveSystem: React.FC = () => {
                 
                 {genesisCompleted && <HUD activeLayer={activeLayer} setActiveLayer={setActiveLayer} />}
                 
-                {activeLayer === 'hyperverse' && <CreativeHyperverse onClose={() => setActiveLayer('genesis')} />}
+                {activeLayer === 'hyperverse' && <CreativeHyperverse onClose={() => setActiveLayer('raindrop')} />}
             </div>
         </>
     );
