@@ -1,4 +1,4 @@
-<!--
+v<!--
 ---
 ---
 ---
@@ -68,8 +68,20 @@ Bringing a complex 얽힌, multi-sensory vision 💡 to life is a slow 🐌, fra
 
 This process takes weeks 🗓️, costs a fortune 💰, and the core emotional spark ✨ of the original vision is almost always lost 😥 in translation between these disconnected steps. The result? A flat 밋밋한, lifeless prototype that fails to inspire 😔.
 
-<div align="center">
-  <img src="./public/assets/problem-solution-flow.svg" alt="Diagram showing the old, chaotic way vs. the new, streamlined VultraDrop solution." width="800"/>
+## 🎞️ VultraDrop Rendering Sequence
+
+<div style="display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 10px;">
+
+  <img src="https://github.com/senushidinara/VDrop/blob/main/IMG_3753.jpeg" width="300">
+  <img src="https://github.com/senushidinara/VDrop/blob/main/IMG_3754.jpeg" width="300">
+  <img src="https://github.com/senushidinara/VDrop/blob/main/IMG_3755.jpeg" width="300">
+  <img src="https://github.com/senushidinara/VDrop/blob/main/IMG_3756.jpeg" width="300">
+  <img src="https://github.com/senushidinara/VDrop/blob/main/IMG_3757.jpeg" width="300">
+  <img src="https://github.com/senushidinara/VDrop/blob/main/IMG_3758.jpeg" width="300">
+  <img src="https://github.com/senushidinara/VDrop/blob/main/IMG_3759.jpeg" width="300">
+  <img src="https://github.com/senushidinara/VDrop/blob/main/IMG_3760.jpeg" width="300">
+  <img src="https://github.com/senushidinara/VDrop/blob/main/IMG_3761.jpeg" width="300">
+
 </div>
 
 ### The Solution: The Unified Concept Manifestation Engine ✨
