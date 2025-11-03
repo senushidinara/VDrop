@@ -42,14 +42,21 @@ export const generateScript = async (vision: string): Promise<string[]> => {
             }
         });
         
-        const responseText = response.text.trim();
-        const responseObject = JSON.parse(responseText);
+        try {
+            const responseText = response.text.trim();
+            // Gemini can sometimes wrap the JSON in ```json ... ```, so we strip that.
+            const jsonText = responseText.replace(/^```json/, '').replace(/```$/, '');
+            const responseObject = JSON.parse(jsonText);
 
-        if (!responseObject.script || !Array.isArray(responseObject.script) || responseObject.script.length === 0) {
-            throw new Error("Malformed script data received from API.");
+            if (!responseObject.script || !Array.isArray(responseObject.script) || responseObject.script.length === 0) {
+                throw new Error("Malformed script data received from API.");
+            }
+
+            return responseObject.script;
+        } catch (parseError) {
+            console.error("Failed to parse JSON response from Gemini:", response.text);
+            throw new Error("The creative core returned an unexpected response. Please try again.");
         }
-
-        return responseObject.script;
 
     } catch (e: any) {
         console.error("Error generating script:", e);

@@ -7,7 +7,11 @@
     </defs>
     <g transform="translate(0, 50)">
         <path fill="none" stroke="url(#e-grad)" stroke-width="4">
-            <attribute an:attributeName="d" an:values="M 25 0 C 75 0, 75 0, 125 0 S 175 0, 225 0; M 25 0 C 75 50, 75 -50, 125 0 S 175 50, 225 0; M 25 0 C 75 0, 75 0, 125 0 S 175 0, 225 0" an:dur="2s" an:repeatCount="indefinite" xmlns:an="http://www.w3.org/2000/svg" />
+            <animate 
+                attributeName="d" 
+                values="M 25 0 C 75 0, 75 0, 125 0 S 175 0, 225 0; M 25 0 C 75 50, 75 -50, 125 0 S 175 50, 225 0; M 25 0 C 75 0, 75 0, 125 0 S 175 0, 225 0" 
+                dur="2s" 
+                repeatCount="indefinite" />
         </path>
     </g>
 </svg>

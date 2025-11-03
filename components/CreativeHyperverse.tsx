@@ -6,11 +6,15 @@ import ClipDisplay from './VideoPlayer';
 import { AspectRatio, ImageSettings, Clip, Manifestation } from '../types';
 import { FilmIcon, RefreshIcon, SpeakerWaveIcon } from './IconComponents';
 
-const ManifestationPlayer: React.FC<{ manifestation: Manifestation | null }> = ({ manifestation }) => {
+interface ManifestationPlayerProps {
+    manifestation: Manifestation | null;
+    setActiveClipIndex: (index: number) => void;
+}
+
+const ManifestationPlayer: React.FC<ManifestationPlayerProps> = ({ manifestation, setActiveClipIndex }) => {
     const narrationRef = useRef<HTMLAudioElement>(null);
     const musicRef = useRef<HTMLAudioElement>(null);
     const [isPlaying, setIsPlaying] = useState(false);
-    const [activeClipIndex, setActiveClipIndex] = useState(0);
 
     useEffect(() => {
         if (manifestation && isPlaying) {
@@ -29,14 +33,17 @@ const ManifestationPlayer: React.FC<{ manifestation: Manifestation | null }> = (
         const handleTimeUpdate = () => {
             if (!manifestation) return;
             const { duration } = narrationEl;
-            if (isNaN(duration)) return;
+            if (isNaN(duration) || duration === 0) return;
             
             const segmentDuration = duration / manifestation.clips.length;
             const newIndex = Math.floor(narrationEl.currentTime / segmentDuration);
             setActiveClipIndex(Math.min(newIndex, manifestation.clips.length - 1));
         };
         
-        const handleEnded = () => setIsPlaying(false);
+        const handleEnded = () => {
+            setIsPlaying(false);
+            setActiveClipIndex(0); // Reset to first clip on end
+        }
 
         narrationEl.addEventListener('timeupdate', handleTimeUpdate);
         narrationEl.addEventListener('ended', handleEnded);
@@ -45,7 +52,7 @@ const ManifestationPlayer: React.FC<{ manifestation: Manifestation | null }> = (
             narrationEl.removeEventListener('timeupdate', handleTimeUpdate);
             narrationEl.removeEventListener('ended', handleEnded);
         };
-    }, [manifestation]);
+    }, [manifestation, setActiveClipIndex]);
 
     if (!manifestation) return null;
 
@@ -80,6 +87,7 @@ const CreativeHyperverse: React.FC<{onClose: () => void}> = ({ onClose }) => {
     const [isGenerating, setIsGenerating] = useState<boolean>(false);
     const [generationStep, setGenerationStep] = useState('');
     const [error, setError] = useState<string | null>(null);
+    const [activeClipIndex, setActiveClipIndex] = useState(0);
 
     const handleGenerateClick = async () => {
         if (!process.env.API_KEY || !process.env.ELEVENLABS_API_KEY) {
@@ -94,6 +102,7 @@ const CreativeHyperverse: React.FC<{onClose: () => void}> = ({ onClose }) => {
         setError(null);
         setIsGenerating(true);
         setManifestation(null);
+        setActiveClipIndex(0);
 
         try {
             // Step 1: Generate Script
@@ -141,6 +150,7 @@ const CreativeHyperverse: React.FC<{onClose: () => void}> = ({ onClose }) => {
         setError(null);
         setIsGenerating(false);
         setGenerationStep('');
+        setActiveClipIndex(0);
     };
 
     const handleDownload = async (urls: string[], id: number) => {
@@ -189,7 +199,7 @@ const CreativeHyperverse: React.FC<{onClose: () => void}> = ({ onClose }) => {
                             <div className="p-4 bg-black/30 rounded-lg flex-grow overflow-y-auto">
                                 <h3 className="font-orbitron text-lg text-[var(--theme-text-title)] mb-2">Generated Narrative</h3>
                                 <p className="text-sm text-gray-300 italic whitespace-pre-wrap">{manifestation.fullScript}</p>
-                                <ManifestationPlayer manifestation={manifestation} />
+                                <ManifestationPlayer manifestation={manifestation} setActiveClipIndex={setActiveClipIndex} />
                             </div>
                         )}
                     </div>
@@ -216,7 +226,7 @@ const CreativeHyperverse: React.FC<{onClose: () => void}> = ({ onClose }) => {
                  <div className="bg-[var(--theme-bg-secondary)] backdrop-blur-sm p-4 rounded-2xl border border-[var(--theme-border-color)] shadow-2xl shadow-black/50 overflow-y-auto panel-corners">
                     <div className="hyperverse-viewscreen-grid">
                         {manifestation?.clips.map((clip, index) => (
-                            <ClipDisplay key={clip.id} clip={clip} onDownload={handleDownload} isActive={false} />
+                            <ClipDisplay key={clip.id} clip={clip} onDownload={handleDownload} isActive={index === activeClipIndex} />
                         ))}
                         {/* Fill empty slots if no manifestation */}
                         {!manifestation && Array.from({ length: 10 }).map((_, i) => (
