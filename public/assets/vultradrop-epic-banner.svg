@@ -1,0 +1,41 @@
+<svg width="800" height="400" viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg" font-family="'Exo 2', sans-serif" style="background: radial-gradient(circle, #1e293b 0%, #020617 70%);">
+  <defs>
+    <filter id="epicGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#67e8f9"/>
+      <stop offset="100%" stop-color="#a855f7"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Starfield -->
+  <g id="stars-fast">
+      <circle cx="150" cy="80" r="1.5" fill="white"><animate attributeName="r" values="1.5;0.5;1.5" dur="3s" repeatCount="indefinite"/></circle>
+      <circle cx="650" cy="320" r="1.5" fill="white"><animate attributeName="r" values="1.5;0.5;1.5" dur="3s" begin="1s" repeatCount="indefinite"/></circle>
+  </g>
+  <g id="stars-slow">
+      <circle cx="80" cy="350" r="0.8" fill="#94a3b8"><animate attributeName="r" values="0.8;0.2;0.8" dur="5s" repeatCount="indefinite"/></circle>
+      <circle cx="720" cy="50" r="0.8" fill="#94a3b8"><animate attributeName="r" values="0.8;0.2;0.8" dur="5s" begin="2s" repeatCount="indefinite"/></circle>
+      <circle cx="400" cy="380" r="0.8" fill="#94a3b8"><animate attributeName="r" values="0.8;0.2;0.8" dur="5s" begin="3s" repeatCount="indefinite"/></circle>
+  </g>
+
+  <!-- VultraDrop Logo -->
+  <g transform="translate(400, 200) scale(1.8)">
+    <g filter="url(#epicGlow)" stroke="url(#logoGrad)">
+        <path d="M50 2.5L95.5 26.25V73.75L50 97.5L4.5 73.75V26.25L50 2.5Z" stroke-width="1.5" fill="none"/>
+        <path d="M27.25 37.5L50 50L72.75 37.5" stroke-width="1" fill="none"/>
+        <path d="M50 50V90" stroke-width="0.5" fill="none" opacity="0.7"/>
+    </g>
+    <text x="50" y="58" font-family="Orbitron, sans-serif" font-size="10" fill="white" text-anchor="middle" font-weight="900" style="text-shadow: 0 0 10px #fff;">V</text>
+  </g>
+
+  <!-- Title Text -->
+  <text x="400" y="100" font-family="Orbitron, sans-serif" font-size="64" fill="white" text-anchor="middle" font-weight="900" style="letter-spacing: 2px; text-shadow: 0 0 20px #a855f7, 0 0 30px #a855f7;">VULTRA DROP</text>
+  <text x="400" y="320" font-size="20" fill="#cbd5e1" text-anchor="middle" font-style="italic" style="letter-spacing: 1px;">The Anatomy of a Digital Lifeform</text>
+
+</svg>

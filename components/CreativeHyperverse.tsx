@@ -4,7 +4,7 @@ import { generateNarration } from '../services/elevenLabsService';
 import { generateMusic } from '../services/musicService';
 import ClipDisplay from './VideoPlayer';
 import { AspectRatio, ImageSettings, Clip, Manifestation } from '../types';
-import { FilmIcon, RefreshIcon, SpeakerWaveIcon } from './IconComponents';
+import { FilmIcon, RefreshIcon } from './IconComponents';
 
 interface ManifestationPlayerProps {
     manifestation: Manifestation | null;
@@ -24,7 +24,10 @@ const ManifestationPlayer: React.FC<ManifestationPlayerProps> = ({ manifestation
         if (!audioEl || !musicEl || !manifestation) return;
 
         if (isPlaying) {
-            audioEl.src = manifestation.clips[currentlyPlayingIndex]?.narrationUrl || '';
+            // Start or resume playback
+            if (audioEl.src !== manifestation.clips[currentlyPlayingIndex]?.narrationUrl) {
+                audioEl.src = manifestation.clips[currentlyPlayingIndex]?.narrationUrl || '';
+            }
             audioEl.play().catch(e => console.error("Audio play failed:", e));
             musicEl.play().catch(e => console.error("Music play failed:", e));
         } else {
@@ -42,7 +45,13 @@ const ManifestationPlayer: React.FC<ManifestationPlayerProps> = ({ manifestation
         const handleTrackEnd = () => {
             setCurrentlyPlayingIndex(prevIndex => {
                 if (manifestation && prevIndex < manifestation.clips.length - 1) {
-                    return prevIndex + 1;
+                    const nextIndex = prevIndex + 1;
+                    // Preload and play next track
+                     if (audioRef.current) {
+                        audioRef.current.src = manifestation.clips[nextIndex].narrationUrl || '';
+                        audioRef.current.play();
+                    }
+                    return nextIndex;
                 }
                 // End of sequence
                 setIsPlaying(false);
@@ -56,11 +65,13 @@ const ManifestationPlayer: React.FC<ManifestationPlayerProps> = ({ manifestation
 
 
     const handlePlayPause = () => {
+        if (!manifestation || manifestation.clips.some(c => !c.narrationUrl)) return;
+        
         if (isPlaying) {
             setIsPlaying(false);
         } else {
             // If starting from a paused state or from the beginning
-            if (currentlyPlayingIndex >= (manifestation?.clips.length ?? 0) -1) {
+             if (currentlyPlayingIndex >= (manifestation?.clips.length ?? 0) -1 && audioRef.current?.ended) {
                 setCurrentlyPlayingIndex(0);
             }
             setIsPlaying(true);
@@ -74,7 +85,8 @@ const ManifestationPlayer: React.FC<ManifestationPlayerProps> = ({ manifestation
             <div className="flex items-center gap-4">
                 <button 
                     onClick={handlePlayPause}
-                    className="w-12 h-12 bg-gradient-to-br from-[var(--theme-accent1)] to-[var(--theme-accent2)] rounded-full flex items-center justify-center text-white shadow-lg transition-transform hover:scale-110"
+                    className="w-12 h-12 bg-gradient-to-br from-[var(--theme-accent1)] to-[var(--theme-accent2)] rounded-full flex items-center justify-center text-white shadow-lg transition-transform hover:scale-110 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed"
+                    disabled={manifestation.clips.some(c => c.status !== 'completed')}
                 >
                     {isPlaying ? 
                         <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M5 4h3v12H5V4zm7 0h3v12h-3V4z"/></svg> :
@@ -125,8 +137,7 @@ const CreativeHyperverse: React.FC<{onClose: () => void}> = ({ onClose }) => {
             
             const initialClips = scriptLines.map((line, i) => ({ id: i, urls: null, status: 'idle' as const, scriptText: line, narrationUrl: null }));
             const musicUrl = generateMusic(vision); // This is a simulated service
-            let tempManifestation: Manifestation = { vision, musicUrl, clips: initialClips };
-            setManifestation(tempManifestation);
+            setManifestation({ vision, musicUrl, clips: initialClips });
 
             // Step 2 & 3: Generate Image Sequences & Narration for each clip in parallel
             for (let i = 0; i < initialClips.length; i++) {
@@ -167,9 +178,7 @@ const CreativeHyperverse: React.FC<{onClose: () => void}> = ({ onClose }) => {
     };
     
     const handlePlaybackChange = (isPlaying: boolean, activeIndex: number) => {
-        if (isPlaying) {
-            setActiveClipIndex(activeIndex);
-        }
+        setActiveClipIndex(activeIndex);
     };
 
     const handleDownload = async (urls: string[], id: number) => {
@@ -219,7 +228,7 @@ const CreativeHyperverse: React.FC<{onClose: () => void}> = ({ onClose }) => {
                                 <h3 className="font-orbitron text-lg text-[var(--theme-text-title)] mb-2">Generated Narrative</h3>
                                 <div className="text-sm text-gray-300 italic space-y-1">
                                     {manifestation.clips.map((clip, index) => (
-                                        <p key={clip.id} className={`transition-colors duration-300 ${index === activeClipIndex ? 'text-cyan-300' : ''}`}>
+                                        <p key={clip.id} className={`transition-colors duration-300 p-1 rounded ${index === activeClipIndex ? 'bg-cyan-500/20 text-cyan-300' : ''}`}>
                                             {clip.scriptText}
                                         </p>
                                     ))}
