@@ -1,4 +1,3 @@
-
 # VultraDrop: The Anatomy of a Digital Lifeform 🌌
 
 <p align="center">
