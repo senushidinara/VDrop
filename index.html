@@ -323,46 +323,50 @@
 
         .panel-corners {
             position: relative;
+            background: rgba(255,255,255,0.6);
+            border-radius: 1rem;
+            padding: 0.5rem;
         }
         .panel-corners::before,
         .panel-corners::after {
             content: '';
             position: absolute;
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             border-style: solid;
-            border-color: var(--theme-accent1);
+            border-color: rgba(125,211,252,0.5);
             transition: all 0.3s ease;
+            pointer-events: none;
         }
         .panel-corners::before {
-            top: -2px;
-            left: -2px;
-            border-width: 2px 0 0 2px;
+            top: -6px;
+            left: -6px;
+            border-width: 3px 0 0 3px;
         }
         .panel-corners::after {
-            top: -2px;
-            right: -2px;
-            border-width: 2px 2px 0 0;
+            top: -6px;
+            right: -6px;
+            border-width: 3px 3px 0 0;
         }
         .panel-corners > :first-child::before,
         .panel-corners > :first-child::after {
             content: '';
             position: absolute;
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             border-style: solid;
-            border-color: var(--theme-accent1);
+            border-color: rgba(125,211,252,0.5);
             transition: all 0.3s ease;
         }
         .panel-corners > :first-child::before {
-            bottom: -2px;
-            left: -2px;
-            border-width: 0 0 2px 2px;
+            bottom: -6px;
+            left: -6px;
+            border-width: 0 0 3px 3px;
         }
         .panel-corners > :first-child::after {
-            bottom: -2px;
-            right: -2px;
-            border-width: 0 2px 2px 0;
+            bottom: -6px;
+            right: -6px;
+            border-width: 0 3px 3px 0;
         }
 
         /* Custom Scrollbar */
