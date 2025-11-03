@@ -85,8 +85,6 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             background-color: var(--theme-bg-primary);
-            background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.03) 1px, transparent 0);
-            background-size: 2rem 2rem;
             overflow: hidden;
             color: var(--theme-text-light);
             transition: background-color 0.5s ease;
@@ -106,39 +104,86 @@
             opacity: 0.3;
         }
         
-        /* --- LAYOUT SYSTEM --- */
-        .container {
-            max-width: 80rem; /* 1280px */
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .main-content-padding {
-            padding: 1rem;
-        }
-        @media (min-width: 640px) {
-            .main-content-padding { padding: 1.5rem; }
-        }
-        @media (min-width: 1024px) {
-            .main-content-padding { padding: 2rem; }
+        /* --- NEW LAYOUT SYSTEM --- */
+        #background-visualization {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
         }
 
-        .command-deck-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 2rem;
+        .scene-container {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 1.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        @media (min-width: 1024px) {
-            .command-deck-grid {
-                grid-template-columns: 1fr 2fr;
-            }
+        .scene-container.active {
+            opacity: 1;
         }
-        .command-deck-sidebar > *:not(:last-child) {
-            margin-bottom: 1rem;
+
+        .info-overlay {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 600px;
+            text-align: center;
+            padding: 2rem;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            border: 1px solid var(--theme-border-color);
+            z-index: 10;
+            pointer-events: none;
         }
-        .command-deck-main {
-            min-height: 600px;
-            position: relative;
+        
+        .hud-container {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: var(--theme-bg-secondary);
+            backdrop-filter: blur(10px);
+            border-radius: 9999px;
+            border: 1px solid var(--theme-border-color);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
+
+        .hud-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            background: var(--theme-bg-tertiary);
+            color: var(--theme-text-subtitle);
+        }
+        .hud-button:hover {
+            background: var(--theme-bg-hover);
+            transform: scale(1.1);
+            color: var(--theme-text-light);
+        }
+        .hud-button.active {
+            border-color: var(--theme-accent1);
+            color: var(--theme-accent1);
+            box-shadow: 0 0 15px var(--theme-glow-light);
+        }
+        .hud-button.hyperverse-button {
+            background: linear-gradient(45deg, var(--theme-accent1), var(--theme-accent2));
+            color: white;
+        }
+
 
         .hyperverse-layout {
             display: flex;
@@ -196,37 +241,6 @@
         @keyframes fade-in {
             from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0px); }
-        }
-
-        @keyframes text-glitch {
-            0% { text-shadow: 0 0 10px var(--theme-glow-heavy), 2px 2px 0 var(--theme-accent2), -2px -2px 0 var(--theme-accent1); opacity: 0.9; }
-            20% { text-shadow: 0 0 10px var(--theme-glow-heavy), -2px 0 0 var(--theme-accent2), 2px 0 0 var(--theme-accent1); }
-            40% { text-shadow: 0 0 10px var(--theme-glow-heavy), 0 -2px 0 var(--theme-accent2), 0 2px 0 var(--theme-accent1); }
-            60% { text-shadow: 0 0 10px var(--theme-glow-heavy), 3px 0 0 var(--theme-accent2), -3px 0 0 var(--theme-accent1); }
-            80% { text-shadow: 0 0 10px var(--theme-glow-heavy), 0 3px 0 var(--theme-accent2), 0 -3px 0 var(--theme-accent1); }
-            100% { text-shadow: 0 0 10px var(--theme-glow-heavy), 0 0 0 transparent, 0 0 0 transparent; opacity: 1; }
-        }
-        
-        .text-glitch-animation {
-             animation: text-glitch 0.2s 0.5s forwards;
-        }
-
-        @keyframes background-pan {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .blueprint-bg {
-            position: absolute;
-            inset: 0;
-            z-index: -1;
-            background: radial-gradient(circle, var(--theme-glow-light) 0%, transparent 60%);
-            mask-image: url('/public/vultradrop-blueprint.svg');
-            mask-size: cover;
-            mask-position: center;
-            animation: background-pan 60s linear infinite;
-            opacity: 0.2;
         }
 
         .genesis-button {
@@ -296,38 +310,24 @@
             border-width: 0 2px 2px 0;
         }
 
-        @keyframes slide-in-from-right {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        .animate-slide-in {
-            animation: slide-in-from-right 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-        }
-
-        @keyframes slide-out-to-right {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100%); opacity: 0; }
-        }
-        .animate-slide-out {
-            animation: slide-out-to-right 0.5s cubic-bezier(0.5, 0, 0.75, 0) forwards;
-        }
-
     </style>
 </head>
 <body class="nebula">
     <canvas id="bg-canvas"></canvas>
+    <div id="background-visualization"></div>
     <div id="root"></div>
 
     <script type="importmap">
-    {
-      "imports": {
-        "react": "https://aistudiocdn.com/react@^19.2.0",
-        "react/": "https://aistudiocdn.com/react@^19.2.0/",
-        "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-        "@google/genai": "https://aistudiocdn.com/@google/genai@^1.28.0"
-      }
-    }
-    </script>
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.28.0",
+    "react-dom": "https://aistudiocdn.com/react-dom@^19.2.0"
+  }
+}
+</script>
     <script type="module" src="/index.tsx"></script>
     <script>
         // Cosmic Nebula background script

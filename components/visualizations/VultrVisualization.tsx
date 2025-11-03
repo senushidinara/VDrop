@@ -2,39 +2,21 @@ import React, { useState, useEffect, useRef } from 'react';
 
 const worldMapCoordinates = [[170,222],[174,218],[179,218],[183,213],[188,213],[191,210],[197,210],[202,207],[209,207],[212,203],[216,203],[221,200],[224,196],[230,195],[234,195],[238,198],[243,198],[248,196],[252,196],[258,195],[262,195],[267,192],[271,192],[276,190],[281,191],[288,191],[291,188],[295,188],[299,185],[303,185],[308,183],[312,183],[316,180],[321,179],[327,179],[332,182],[337,182],[341,185],[346,186],[349,190],[353,190],[356,193],[356,198],[354,203],[354,207],[351,210],[351,215],[349,219],[349,224],[346,227],[341,228],[337,228],[332,226],[328,226],[324,229],[320,229],[315,227],[311,227],[310,231],[310,235],[315,241],[319,245],[324,248],[328,248],[331,252],[331,256],[329,261],[329,266],[326,269],[321,271],[316,271],[312,274],[310,278],[310,283],[314,287],[318,289],[322,289],[326,292],[329,292],[333,295],[337,295],[340,298],[345,299],[350,299],[354,296],[358,296],[361,293],[363,288],[363,284],[360,280],[356,278],[352,278],[348,281],[345,281],[342,277],[342,273],[345,269],[349,267],[353,267],[356,264],[356,260],[353,256],[353,252],[356,249],[360,249],[364,252],[368,252],[371,248],[371,244],[374,240],[378,237],[382,237],[385,240],[388,245],[388,249],[390,253],[390,257],[387,261],[383,263],[379,263],[375,266],[372,270],[372,275],[375,279],[379,279],[383,282],[387,282],[390,285],[390,290],[387,294],[383,296],[379,296],[375,293],[372,291],[368,291],[365,294],[365,299],[368,303],[372,305],[376,305],[380,302],[383,302],[387,305],[391,305],[395,308],[399,308],[403,311],[407,311],[411,308],[415,308],[419,305],[423,305],[427,302],[431,302],[435,299],[439,299],[443,296],[447,296],[451,293],[455,293],[459,290],[463,290],[467,287],[471,287],[475,284],[479,284],[483,281],[487,281],[491,278],[495,278],[499,275],[503,275],[507,272],[511,272],[515,269],[519,269],[523,266],[527,266],[531,263],[535,263],[539,260],[543,260],[547,257],[551,257],[555,254],[559,254],[563,251],[567,251],[571,248],[575,248],[579,245],[583,245],[587,242],[591,242],[595,239],[599,239],[603,236],[607,236],[611,233],[615,233],[619,230],[623,230],[627,227],[631,227],[635,224],[639,224],[643,221],[647,221],[651,218],[655,218],[659,215],[663,215],[667,212],[671,212],[675,209],[679,209],[683,206],[687,206],[691,203],[695,203],[699,200],[703,200],[707,197],[711,197],[715,194],[719,194],[723,191],[727,191],[731,188],[735,188],[739,185],[743,185],[747,182],[751,182],[755,179],[759,179],[763,176],[767,176],[771,173],[775,173],[779,170],[783,170],[787,167],[791,167],[795,164],[799,164],[236,252],[240,256],[240,261],[236,266],[232,269],[228,269],[224,266],[220,266],[216,269],[212,269],[208,266],[204,266],[200,269],[196,269],[192,266],[188,266],[184,269],[180,269],[176,266],[172,266],[168,269],[164,269],[160,266],[156,266],[152,269],[148,269],[144,266],[140,266],[136,269],[132,269],[128,266],[124,266],[120,269],[116,269],[112,266],[108,266],[104,269],[100,269],[96,266],[92,266],[88,269],[84,269],[80,266],[76,266],[72,269],[68,269],[64,266],[60,266],[56,269],[52,269],[48,266],[44,266],[40,269],[36,269],[32,266],[28,266],[24,269],[20,269],[16,266],[12,266],[8,269],[210,300],[210,310],[215,315],[220,318],[225,320],[230,320],[235,318],[240,315],[245,310],[245,300],[250,295],[255,290],[260,285],[265,280],[270,280],[275,285],[280,290],[285,295],[285,300],[290,305],[290,315],[295,320],[300,323],[305,325],[310,325],[315,323],[320,320],[325,315],[325,305],[330,300],[335,295],[340,290],[345,285],[350,280],[355,280],[360,285],[365,290],[370,295],[370,300],[375,305],[375,315],[380,320],[385,323],[390,325],[395,325],[400,323],[405,320],[410,315],[410,305],[415,300],[420,295],[425,290],[430,285],[435,280],[440,280],[445,285],[450,290],[455,295],[455,300],[460,305],[460,315],[465,320],[470,323],[475,325],[480,325],[485,323],[490,320],[495,315],[495,305],[500,300],[505,295],[510,290],[515,285],[520,280],[525,280],[530,285],[535,290],[540,295],[540,300],[545,305],[545,315],[550,320],[555,323],[560,325],[565,325],[570,323],[575,320],[580,315],[580,305],[585,300],[590,295],[595,290],[600,285],[605,280],[610,280],[615,285],[620,290],[625,295],[625,300],[630,305],[630,315],[635,320],[640,323],[645,325],[650,325],[655,323],[660,320],[665,315],[665,305],[670,300],[675,295],[680,290],[685,285],[690,280],[695,280],[700,285],[705,290],[710,295],[710,300],[715,305],[715,315],[720,320],[725,323],[730,325],[735,325],[740,323],[745,320],[750,315],[750,305],[755,300],[760,295],[765,290],[770,285],[775,280],[780,280],[785,285],[790,290],[795,295],[795,300],[800,305],[800,315],[794,152],[794,147],[790,143],[785,140],[780,140],[775,143],[770,147],[765,152],[765,157],[770,161],[775,164],[780,164],[785,161],[790,157],[794,152],[700,100],[705,95],[710,90],[715,85],[720,85],[725,90],[730,95],[735,100],[735,105],[740,110],[745,115],[750,115],[755,110],[760,105],[765,100]];
 
-const Node: React.FC<{ x: number, y: number, isDragging: boolean, onMouseDown: (e: React.MouseEvent) => void }> = ({ x, y, isDragging, onMouseDown }) => (
-    <g transform={`translate(${x}, ${y})`} onMouseDown={onMouseDown} style={{ cursor: isDragging ? 'grabbing' : 'grab' }}>
-        <circle r="15" fill="rgb(14 165 233)" stroke="#fff" strokeWidth="2" className="opacity-80 drop-shadow-[0_0_8px_rgba(125,211,252,0.8)]"/>
-        <circle r="25" fill="none" stroke="rgb(14 165 233)" strokeWidth="1.5" className="animate-ping" style={{ transformOrigin: 'center', transformBox: 'fill-box' }} />
+const Node: React.FC<{ x: number, y: number }> = ({ x, y }) => (
+    <g transform={`translate(${x}, ${y})`}>
+        <circle r="8" fill="rgb(14 165 233)" stroke="#fff" strokeWidth="1" className="opacity-80 drop-shadow-[0_0_8px_rgba(125,211,252,0.8)]"/>
+        <circle r="15" fill="none" stroke="rgb(14 165 233)" strokeWidth="1" className="animate-ping" style={{ transformOrigin: 'center', transformBox: 'fill-box', animationDuration: '3s' }} />
     </g>
 );
 
 export const VultrVisualization: React.FC = () => {
-    const [nodes, setNodes] = useState([{ x: 250, y: 200 }, { x: 750, y: 250 }]);
-    const [draggingNode, setDraggingNode] = useState<number | null>(null);
+    const [nodes] = useState([{ x: 250, y: 200 }, { x: 750, y: 250 }, { x: 500, y: 400 }, { x: 150, y: 350 }, {x: 850, y: 150}]);
     const pathRef = useRef<SVGPathElement>(null);
 
-    const handleMouseMove = (e: React.MouseEvent) => {
-        if (draggingNode === null) return;
-        const svg = e.currentTarget.closest('svg');
-        if (!svg) return;
-
-        const pt = svg.createSVGPoint();
-        pt.x = e.clientX;
-        pt.y = e.clientY;
-        const { x, y } = pt.matrixTransform(svg.getScreenCTM()?.inverse());
-        
-        setNodes(prev => prev.map((node, i) => i === draggingNode ? { x, y } : node));
-    };
-
-    const handleMouseUp = () => {
-        setDraggingNode(null);
-    };
-
-    const pathD = nodes.length > 1 ? `M ${nodes[0].x} ${nodes[0].y} Q ${(nodes[0].x + nodes[1].x)/2} ${(nodes[0].y + nodes[1].y)/2 - 100} ${nodes[1].x} ${nodes[1].y}` : "";
+    const pathD = `M ${nodes[0].x} ${nodes[0].y} Q 500 100 ${nodes[1].x} ${nodes[1].y} T ${nodes[2].x} ${nodes[2].y} T ${nodes[3].x} ${nodes[3].y} T ${nodes[4].x} ${nodes[4].y}`;
 
     return (
-        <div className="relative h-[350px] overflow-hidden rounded-lg bg-black/30">
+        <div className="w-full h-full relative">
              <style>{`
                 .particle {
                     animation: pulse 4s infinite alternate;
@@ -44,8 +26,8 @@ export const VultrVisualization: React.FC = () => {
                     to { opacity: 1.0; transform: scale(1.1); }
                 }
             `}</style>
-            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1000 500" onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
-                <g>
+            <svg className="w-full h-full" viewBox="0 0 1000 500">
+                <g transform="translate(100, 50) scale(0.8)">
                     {worldMapCoordinates.map(([x, y], i) => (
                         <circle
                             key={i}
@@ -68,17 +50,17 @@ export const VultrVisualization: React.FC = () => {
                     <g filter="url(#glow)">
                         {/* Main Packet */}
                         <circle r="4.5" fill="white">
-                           <animateMotion id="packetMotion" dur="4s" repeatCount="indefinite" path={pathD} />
+                           <animateMotion id="packetMotion" dur="8s" repeatCount="indefinite" path={pathD} />
                         </circle>
                         {/* Particle Trail */}
                         <circle r="3" fill="white" fillOpacity="0.5">
-                           <animateMotion dur="4s" repeatCount="indefinite" begin="packetMotion.begin+0.08s" path={pathD} />
+                           <animateMotion dur="8s" repeatCount="indefinite" begin="packetMotion.begin+0.08s" path={pathD} />
                         </circle>
                          <circle r="2" fill="white" fillOpacity="0.3">
-                           <animateMotion dur="4s" repeatCount="indefinite" begin="packetMotion.begin+0.16s" path={pathD} />
+                           <animateMotion dur="8s" repeatCount="indefinite" begin="packetMotion.begin+0.16s" path={pathD} />
                         </circle>
                          <circle r="1" fill="white" fillOpacity="0.1">
-                           <animateMotion dur="4s" repeatCount="indefinite" begin="packetMotion.begin+0.24s" path={pathD} />
+                           <animateMotion dur="8s" repeatCount="indefinite" begin="packetMotion.begin+0.24s" path={pathD} />
                         </circle>
                     </g>
                 )}
@@ -98,13 +80,9 @@ export const VultrVisualization: React.FC = () => {
                 </defs>
 
                 {nodes.map((node, i) => (
-                    <Node key={i} {...node} isDragging={draggingNode === i} onMouseDown={() => setDraggingNode(i)} />
+                    <Node key={i} {...node} />
                 ))}
-
             </svg>
-            <div className="absolute bottom-2 left-2 p-2 bg-black/50 rounded text-sm text-sky-300 font-orbitron">
-                Drag nodes to move consciousness across the global compute layer.
-            </div>
         </div>
     );
 };
