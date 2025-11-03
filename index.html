@@ -4,8 +4,45 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AI Clip Generator</title>
+    <title>VultraDrop: AI Clip Generator</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+      body {
+        font-family: 'Roboto', sans-serif;
+        background-color: #000;
+        color: #fff;
+        overflow: hidden; /* Prevents scrollbars from the canvas */
+      }
+      #root {
+        position: relative;
+        z-index: 1;
+      }
+      #nebula-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+      }
+      h1, .font-orbitron {
+        font-family: 'Orbitron', sans-serif;
+      }
+      .pulse-glow:not(:disabled) {
+        animation: pulse-glow-animation 2s infinite;
+      }
+      @keyframes pulse-glow-animation {
+        0%, 100% {
+          box-shadow: 0 0 10px rgba(0, 255, 255, 0.3), 0 0 10px rgba(191, 0, 255, 0.3);
+        }
+        50% {
+          box-shadow: 0 0 20px rgba(0, 255, 255, 0.6), 0 0 20px rgba(191, 0, 255, 0.6);
+        }
+      }
+    </style>
   <script type="importmap">
 {
   "imports": {
@@ -17,8 +54,90 @@
 }
 </script>
 </head>
-  <body class="bg-gray-900 text-white">
+  <body>
+    <canvas id="nebula-canvas"></canvas>
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
+    <script>
+      // Nebula background script
+      const canvas = document.getElementById('nebula-canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      let stars = [];
+      const numStars = 200;
+
+      for(let i = 0; i < numStars; i++) {
+        stars.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          radius: Math.random() * 1.5,
+          alpha: Math.random(),
+          velocity: {
+            x: (Math.random() - 0.5) * 0.2,
+            y: (Math.random() - 0.5) * 0.2
+          }
+        });
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Nebula effect
+        const gradient = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, 0, canvas.width / 2, canvas.height / 2, canvas.width / 2);
+        gradient.addColorStop(0, 'rgba(2, 0, 36, 0)');
+        gradient.addColorStop(0.5, 'rgba(4, 9, 30, 0.8)');
+        gradient.addColorStop(1, 'rgba(0,0,0,1)');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const time = Date.now() * 0.0001;
+        const noise = (x, y) => {
+            let p = new Array(512);
+            let permutation = [151,160,137,91,90,15,131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,190, 6,148,247,120,234,75,0,26,197,62,94,252,219,203,117,35,11,32,57,177,33];
+            for (let i=0; i < 256 ; i++) p[256+i] = p[i] = permutation[i];
+            let X = Math.floor(x) & 255, Y = Math.floor(y) & 255;
+            x -= Math.floor(x); y -= Math.floor(y);
+            let u = (x*x*x*(x*(x*6-15)+10)), v = (y*y*y*(y*(y*6-15)+10));
+            let A = p[X]+Y, B = p[X+1]+Y;
+            return (1-v)*((1-u)*(p[p[A]]) + u*(p[p[B]])) + v*((1-u)*(p[p[A+1]]) + u*(p[p[B+1]]));
+        }
+
+        for (let x = 0; x < canvas.width; x += 10) {
+            for (let y = 0; y < canvas.height; y += 10) {
+                const value = noise(x / 100 + time, y / 100 + time);
+                ctx.fillStyle = `rgba(100, 150, 255, ${value * 0.05})`;
+                ctx.fillRect(x, y, 10, 10);
+                const value2 = noise(x / 80 - time, y / 80 - time);
+                ctx.fillStyle = `rgba(200, 100, 255, ${value2 * 0.05})`;
+                ctx.fillRect(x, y, 10, 10);
+            }
+        }
+
+        // Stars
+        ctx.fillStyle = 'white';
+        stars.forEach(star => {
+          ctx.beginPath();
+          ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha})`;
+          ctx.fill();
+
+          star.x += star.velocity.x;
+          star.y += star.velocity.y;
+
+          if (star.x < 0 || star.x > canvas.width) star.velocity.x *= -1;
+          if (star.y < 0 || star.y > canvas.height) star.velocity.y *= -1;
+        });
+
+        requestAnimationFrame(animate);
+      }
+
+      animate();
+      window.addEventListener('resize', () => {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+      });
+    </script>
   </body>
 </html>

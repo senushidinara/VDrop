@@ -7,6 +7,17 @@ interface ClipDisplayProps {
   onDownload: (urls: string[], id: number) => void;
 }
 
+const GeneratingPulse: React.FC = () => (
+    <div className="flex flex-col items-center justify-center h-full">
+        <div className="relative w-10 h-10">
+          <div className="absolute inset-0 rounded-full bg-cyan-500 opacity-50 animate-ping"></div>
+          <div className="absolute inset-2 rounded-full bg-cyan-400 opacity-75 animate-pulse"></div>
+        </div>
+        <p className="text-xs text-cyan-200 mt-4 font-light">Creating...</p>
+    </div>
+);
+
+
 const ClipDisplay: React.FC<ClipDisplayProps> = ({ clip, onDownload }) => {
   const { status, urls, id, audioUrl } = clip;
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -30,12 +41,7 @@ const ClipDisplay: React.FC<ClipDisplayProps> = ({ clip, onDownload }) => {
   const renderContent = () => {
     switch (status) {
       case 'generating':
-        return (
-          <div className="flex flex-col items-center justify-center h-full">
-            <div className="w-8 h-8 border-2 border-dashed rounded-full animate-spin border-cyan-400"></div>
-            <p className="text-xs text-gray-400 mt-2">Generating...</p>
-          </div>
-        );
+        return <GeneratingPulse />;
       case 'completed':
         if (urls && urls.length > 0) {
           return (
@@ -48,7 +54,7 @@ const ClipDisplay: React.FC<ClipDisplayProps> = ({ clip, onDownload }) => {
                     className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${index === currentIndex ? 'opacity-100' : 'opacity-0'}`}
                 />
               ))}
-              <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div className="absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <div className="flex flex-col items-center gap-3">
                     <button
                         onClick={() => onDownload(urls, id)}
@@ -86,14 +92,14 @@ const ClipDisplay: React.FC<ClipDisplayProps> = ({ clip, onDownload }) => {
       default:
         return (
           <div className="flex items-center justify-center h-full">
-            <p className="text-gray-500 text-sm">Waiting...</p>
+            <p className="text-gray-600 text-sm font-orbitron">Awaiting Vision...</p>
           </div>
         );
     }
   };
 
   return (
-    <div className="aspect-video bg-gray-800/50 rounded-lg shadow-lg overflow-hidden border-2 border-gray-700">
+    <div className="aspect-video bg-black/30 rounded-lg shadow-lg overflow-hidden border border-cyan-500/20">
       {renderContent()}
     </div>
   );

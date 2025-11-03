@@ -1,5 +1,7 @@
 {
-  "name": "AI Clip Generator",
-  "description": "Describe your vision and let AI generate 10 unique, animated video clips. This application uses Gemini to turn your text prompts into short, downloadable videos.",
-  "requestFramePermissions": []
+  "name": "VultraDrop",
+  "description": "VultraDrop: A digital lifeform paradigm where intelligence is alive, speaks, evolves, and exists beyond time and space. This portal demonstrates its ability to manifest concepts into expressive, animated clips.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
 }
