@@ -101,14 +101,14 @@ Words and links are not enough. You need to see the energy. Here are the living,
 <p align="center">
   <strong>Google Gemini 🧠</strong>
   <br/>
-  <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExd2RocnJ2ZndqaWx0dWY1azU2ZzU4eDB0ZzY5d3p0anZva2lkeTgydCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/USyAlqu8Jg3H8xI903/giphy.gif" alt="Gemini Logo Animation" width="200"/>
+  <img src="https://storage.googleapis.com/aai-web-template-files/gemini-animated.gif" alt="Gemini Logo Animation" width="200"/>
   <br/>
   <small><em>The Mind. The storyteller. The core of reason and imagination.</em></small>
 </p>
 <p align="center">
   <strong>ElevenLabs 🗣️</strong>
   <br/>
-  <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExd2d4dDRlZHgxYXd0NWYyN3N6N3Q0MGVnY3pwa3N2cjRkMHR3OXFicCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/bWkz62v3Zo5R6j823z/giphy.gif" alt="ElevenLabs Logo Animation" width="200"/>
+  <img src="https://storage.googleapis.com/aai-web-template-files/elevenlabs-animated.gif" alt="ElevenLabs Logo Animation" width="200"/>
   <br/>
   <small><em>The Voice. The soul. The source of charisma and emotional presence.</em></small>
 </p>
@@ -580,4 +580,4 @@ This is just the beginning. The VultraDrop paradigm is vast, and there are entir
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+This project is licensed under the MIT License.
