@@ -122,7 +122,8 @@ const ClipDisplay: React.FC<ClipDisplayProps> = ({ clip, onDownload, isActive })
               <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <button
                     onClick={() => onDownload(urls, id)}
-                    className="flex items-center gap-2 px-4 py-2 bg-cyan-500/80 text-white rounded-lg hover:bg-cyan-500 transition-colors backdrop-blur-sm"
+                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all duration-300 backdrop-blur-sm shadow-lg transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                    aria-label={`Download scene ${id + 1} images`}
                     >
                     <DownloadIcon className="w-5 h-5" />
                     Download
@@ -150,8 +151,19 @@ const ClipDisplay: React.FC<ClipDisplayProps> = ({ clip, onDownload, isActive })
   };
 
   return (
-    <div className={`panel-corners aspect-video bg-black/50 rounded-lg shadow-lg overflow-hidden border-2 transition-all duration-500 hover:shadow-2xl hover:shadow-[var(--theme-glow-light)] ${isActive ? 'border-[var(--theme-accent2)] shadow-2xl shadow-[var(--theme-glow-heavy)] scale-105' : 'border-[var(--theme-border-color)]'}`}>
-        <div className="w-full h-full">{renderContent()}</div>
+    <div 
+      className={`panel-corners aspect-video bg-black/50 rounded-lg shadow-lg overflow-hidden border-2 transition-all duration-500 hover:shadow-2xl hover:shadow-[var(--theme-glow-light)] ${isActive ? 'border-[var(--theme-accent2)] shadow-2xl shadow-[var(--theme-glow-heavy)] scale-105 ring-4 ring-[var(--theme-accent2)]/50' : 'border-[var(--theme-border-color)]'}`}
+      role="article"
+      aria-label={`Scene ${id + 1} - ${status}`}
+    >
+        <div className="w-full h-full relative">
+          {renderContent()}
+          {isActive && (
+            <div className="absolute top-2 right-2 bg-[var(--theme-accent2)] text-white px-2 py-1 rounded-full text-xs font-bold animate-pulse">
+              PLAYING
+            </div>
+          )}
+        </div>
     </div>
   );
 };
