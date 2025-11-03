@@ -1,5 +1,3 @@
-
-
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Manifestation } from '../types';
 
@@ -11,83 +9,78 @@ export const useCinematicPlayer = (manifestation: Manifestation | null) => {
     const musicAudioRef = useRef<HTMLAudioElement | null>(null);
     const narrationAudioRef = useRef<HTMLAudioElement | null>(null);
 
-    const advanceToNextClip = useCallback(() => {
-        setActiveClipIndex(prevIndex => {
-            if (prevIndex === null) return 0; // Should not happen if called correctly
-            
-            const isLastClip = !manifestation || prevIndex >= manifestation.clips.length - 1;
-            if (isLastClip) {
-                setIsPlaying(false);
-                setIsFinished(true);
-                // Fade out music
-                if (musicAudioRef.current) {
-                    let vol = musicAudioRef.current.volume;
-                    const fadeOut = setInterval(() => {
-                        if (musicAudioRef.current && vol > 0.1) {
-                            vol -= 0.1;
-                            musicAudioRef.current.volume = Math.max(0, vol);
-                        } else {
-                            clearInterval(fadeOut);
-                             if (musicAudioRef.current) {
-                                musicAudioRef.current.pause();
-                            }
-                        }
-                    }, 100);
-                }
-                return null; // End of sequence
-            }
-            return prevIndex + 1;
-        });
-    }, [manifestation]);
-
     // Effect for handling playback progression
     useEffect(() => {
+        // This effect is the single source of truth for playing a clip's narration.
+        // It should only run when the active clip changes while in a playing state.
+        
         if (!isPlaying || activeClipIndex === null || !manifestation?.clips) {
             return;
         }
 
         const currentClip = manifestation.clips[activeClipIndex];
         
-        // If clip is not ready or has no audio, skip it.
+        const handlePlaybackEnd = () => {
+             setActiveClipIndex(prevIndex => {
+                if (prevIndex === null) return null; // Should not happen
+                
+                const isLastClip = !manifestation || prevIndex >= manifestation.clips.length - 1;
+
+                if (isLastClip) {
+                    setIsPlaying(false);
+                    setIsFinished(true);
+                    if (musicAudioRef.current) {
+                        musicAudioRef.current.pause();
+                    }
+                    return null; // End of sequence
+                }
+                return prevIndex + 1; // Advance to next clip
+            });
+        };
+
+        // If the current clip is not ready or has no audio, skip it after a short delay.
         if (!currentClip || currentClip.status !== 'completed' || !currentClip.narrationUrl) {
-            const skipTimeout = setTimeout(advanceToNextClip, 200);
+            const skipTimeout = setTimeout(handlePlaybackEnd, 250); // Use a small delay for skipping
             return () => clearTimeout(skipTimeout);
         }
 
-        // Create and play narration for the current clip
+        // Create, play, and set up listeners for the narration audio.
         const narration = new Audio(currentClip.narrationUrl);
         narrationAudioRef.current = narration;
 
-        const handleNarrationEnded = () => {
-            advanceToNextClip();
-        };
-
-        narration.addEventListener('ended', handleNarrationEnded);
+        narration.addEventListener('ended', handlePlaybackEnd);
+        narration.addEventListener('error', (e) => {
+            console.error(`Error playing narration for clip ${activeClipIndex}:`, e);
+            handlePlaybackEnd(); // Also advance on error
+        });
         
         narration.play().catch(e => {
-            console.error(`Error playing narration for clip ${activeClipIndex}:`, e);
-            handleNarrationEnded(); // Skip to next clip if playback fails
+            console.error(`Error starting narration for clip ${activeClipIndex}:`, e);
+            handlePlaybackEnd(); // Skip to next clip if playback fails to start
         });
 
-        // Cleanup function for this specific effect run
+        // The single, most important cleanup function for this effect run.
         return () => {
-            narration.removeEventListener('ended', handleNarrationEnded);
-            narration.pause();
+            narration.removeEventListener('ended', handlePlaybackEnd);
+            narration.removeEventListener('error', handlePlaybackEnd);
+            if (!narration.paused) {
+                narration.pause();
+            }
             narration.src = ''; // Release memory
             narrationAudioRef.current = null;
         };
 
-    }, [isPlaying, activeClipIndex, manifestation, advanceToNextClip]);
+    }, [isPlaying, activeClipIndex, manifestation]);
     
-    const cleanupAll = useCallback(() => {
-        setIsPlaying(false);
-        setActiveClipIndex(null);
+    const cleanupAllAudio = useCallback(() => {
         if (musicAudioRef.current) {
             musicAudioRef.current.pause();
+            musicAudioRef.current.src = '';
             musicAudioRef.current = null;
         }
         if (narrationAudioRef.current) {
             narrationAudioRef.current.pause();
+            narrationAudioRef.current.src = '';
             narrationAudioRef.current = null;
         }
     }, []);
@@ -95,7 +88,10 @@ export const useCinematicPlayer = (manifestation: Manifestation | null) => {
     const play = useCallback(() => {
         if (!manifestation || !manifestation.clips.some(c => c.status === 'completed')) return;
         
-        cleanupAll();
+        // Stop any existing playback and clean up
+        setIsPlaying(false);
+        setActiveClipIndex(null);
+        cleanupAllAudio();
 
         if (manifestation.musicUrl) {
             const music = new Audio(manifestation.musicUrl);
@@ -107,13 +103,15 @@ export const useCinematicPlayer = (manifestation: Manifestation | null) => {
 
         setIsFinished(false);
         setIsPlaying(true);
-        setActiveClipIndex(0);
-    }, [manifestation, cleanupAll]);
+        setActiveClipIndex(0); // Start the sequence
+    }, [manifestation, cleanupAllAudio]);
 
     const stop = useCallback(() => {
-        cleanupAll();
+        setIsPlaying(false);
+        setActiveClipIndex(null);
         setIsFinished(false);
-    }, [cleanupAll]);
+        cleanupAllAudio();
+    }, [cleanupAllAudio]);
 
     return {
         isPlaying,
