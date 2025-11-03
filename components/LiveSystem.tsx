@@ -207,23 +207,25 @@ const LiveSystem: React.FC = () => {
                     <ParticleTitle />
                 </div>
 
-                {/* Background Visualizations */}
-                {backgroundContainer && (
-                    <>
-                        {layers.map(layer => (
-                            layer.id !== 'genesis' && (
-                                <React.Fragment key={layer.id}>
-                                    {ReactDOM.createPortal(
-                                        <div className={`scene-container ${activeLayer === layer.id ? 'active' : ''}`}>
-                                            <layer.visualization />
-                                        </div>,
-                                        backgroundContainer
-                                    )}
-                                </React.Fragment>
-                            )
-                        ))}
-                    </>
-                )}
+                {/* Background Visualizations: try portal, fallback to inline rendering if container missing */}
+                {layers.map(layer => (
+                    layer.id !== 'genesis' && (
+                        <React.Fragment key={layer.id}>
+                            {backgroundContainer ? (
+                                ReactDOM.createPortal(
+                                    <div className={`scene-container ${activeLayer === layer.id ? 'active' : ''}`}>
+                                        <layer.visualization />
+                                    </div>,
+                                    backgroundContainer
+                                )
+                            ) : (
+                                <div className={`scene-container ${activeLayer === layer.id ? 'active' : ''} absolute inset-0 z-0`}>
+                                    <layer.visualization />
+                                </div>
+                            )}
+                        </React.Fragment>
+                    )
+                ))}
 
                 {/* Header Logo */}
                 <header className="fixed top-4 left-4 z-20 animate-fade-in">
