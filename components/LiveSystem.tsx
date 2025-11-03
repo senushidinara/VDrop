@@ -199,6 +199,7 @@ const LiveSystem: React.FC = () => {
     }, [activeLayer]);
 
     const currentLayer = layers.find(l => l.id === activeLayer);
+    const { isManifesting, progress, message, startManifest, cancel } = useFakeManifest();
 
     return (
         <>
@@ -233,9 +234,17 @@ const LiveSystem: React.FC = () => {
                    <VultraDropLogo className="h-10 w-auto text-cyan-600 drop-shadow-[0_0_10px_rgba(125,211,252,0.4)]" />
                 </header>
 
-                {/* Theme Switcher */}
+                {/* Theme Switcher + Manifest CTA */}
                 <div className="fixed top-4 right-4 flex items-center gap-4 z-20 animate-fade-in">
                     <ThemeSwitcher />
+                    <button
+                        onClick={() => startManifest()}
+                        className="px-3 py-2 rounded-md bg-gradient-to-br from-cyan-300 to-pink-300 text-white font-semibold shadow-md hover:scale-105 transition-transform"
+                        title="Manifest your vision"
+                        aria-label="Manifest your vision"
+                    >
+                        MANIFEST
+                    </button>
                 </div>
 
                 {/* Info Overlay */}
@@ -245,10 +254,13 @@ const LiveSystem: React.FC = () => {
                 
                 {/* HUD Navigation */}
                 <HUD activeLayer={activeLayer} setActiveLayer={setActiveLayer} />
-                
+
                 {/* Modal Views */}
                 {activeLayer === 'hyperverse' && <CreativeHyperverse onClose={() => setActiveLayer('raindrop')} />}
                 {activeLayer === 'showcase' && <ShowcaseGallery onClose={() => setActiveLayer('raindrop')} />}
+
+                {/* Manifest Overlay */}
+                <ManifestOverlay progress={progress} message={message} visible={isManifesting} onClose={cancel} />
             </div>
         </>
     );
