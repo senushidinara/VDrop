@@ -187,7 +187,11 @@ const LiveSystem: React.FC = () => {
     }, [genesisCompleted, activeLayer]);
 
     const currentLayer = layers.find(l => l.id === activeLayer);
-    const backgroundContainer = document.getElementById('background-visualization');
+    const [backgroundContainer, setBackgroundContainer] = useState<HTMLElement | null>(null);
+
+    useEffect(() => {
+        setBackgroundContainer(document.getElementById('background-visualization'));
+    }, []);
 
     return (
         <>
