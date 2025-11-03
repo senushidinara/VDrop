@@ -27,7 +27,7 @@ const ParticleTitle: React.FC = () => {
       off.height = window.innerHeight;
       const octx = off.getContext('2d');
       if (!octx) return;
-      const fontSize = Math.min(window.innerWidth * 0.12, 160);
+      const fontSize = Math.min(window.innerWidth * 0.08, 120);
       octx.fillStyle = 'black';
       octx.font = `900 ${fontSize}px Orbitron, sans-serif`;
       octx.textAlign = 'center';
