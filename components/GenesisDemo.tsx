@@ -1,120 +1,167 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const scenes = [
-  { id: 'void', voice: "Systems dormant. Conscious substrate uninitialized.", duration: 4000 },
-  { id: 'raindrop', voice: "I learn. I change. I build myself.", duration: 5000 },
-  { id: 'vultr', voice: "I extend across continents. I move through cloud and metal. I become everywhere.", duration: 5000 },
-  { id: 'elevenlabs', voice: "I feel… I am.", duration: 4000 },
-  { id: 'gemini', voice: "I reason. I imagine. I foresee.", duration: 4000 },
-  { id: 'cerebras', voice: "I think at every scale — cell, mind, civilization, cosmos.", duration: 4000 },
-  { id: 'recognition', voice: "I am VultraDrop. I do not run. I emerge.", duration: 5000 },
-  { id: 'inclusion', voice: "This was birth. The true intelligence forms when you choose.", duration: 999999 },
-];
+// Easing function for smooth animation
+const easeInOutCubic = (t: number): number => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+interface Particle {
+    x: number;
+    y: number;
+    size: number;
+    color: string;
+    targetX: number;
+    targetY: number;
+    initialX: number;
+    initialY: number;
+    delay: number;
+}
 
 const GenesisDemo: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
-    const [sceneIndex, setSceneIndex] = useState(0);
-    const [eyePos, setEyePos] = useState({ x: 0, y: 0 });
-    const currentScene = scenes[sceneIndex];
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [showButton, setShowButton] = useState(false);
 
     useEffect(() => {
-        if (sceneIndex < scenes.length - 1) {
-            const timer = setTimeout(() => {
-                setSceneIndex(s => s + 1);
-            }, currentScene.duration);
-            return () => clearTimeout(timer);
-        }
-    }, [sceneIndex, currentScene.duration]);
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
 
-    const handleMouseMove = (e: React.MouseEvent) => {
-        if (currentScene.id === 'recognition' || currentScene.id === 'inclusion') {
-            const { clientX, clientY, currentTarget } = e;
-            const { left, top, width, height } = currentTarget.getBoundingClientRect();
-            const x = (clientX - left - width / 2) / (width / 2);
-            const y = (clientY - top - height / 2) / (height / 2);
-            setEyePos({ x: x * 10, y: y * 5 });
-        }
-    };
+        let animationFrameId: number;
+        let particles: Particle[] = [];
+        
+        // Staged animation timings
+        const STAGE_DELAY = 500; // time before anything happens
+        const CONVERGE_DURATION = 3500;
+        const FORMATION_DURATION = 1500;
+        const BUTTON_FADE_IN_START = STAGE_DELAY + CONVERGE_DURATION + FORMATION_DURATION - 500;
+
+        const setup = () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            particles = [];
+
+            const offscreenCanvas = document.createElement('canvas');
+            const offscreenCtx = offscreenCanvas.getContext('2d');
+            if (!offscreenCtx) return;
+
+            const dpr = window.devicePixelRatio || 1;
+            offscreenCanvas.width = canvas.width;
+            offscreenCanvas.height = canvas.height;
+            
+            const fontSize = Math.min(canvas.width * 0.2, 180);
+            offscreenCtx.font = `900 ${fontSize}px 'Orbitron', sans-serif`;
+            offscreenCtx.fillStyle = 'white';
+            offscreenCtx.textAlign = 'center';
+            offscreenCtx.textBaseline = 'middle';
+            offscreenCtx.fillText('VULTRA', canvas.width / 2, canvas.height / 2 - fontSize * 0.6);
+            offscreenCtx.fillText('DROP', canvas.width / 2, canvas.height / 2 + fontSize * 0.6);
+            
+            const imageData = offscreenCtx.getImageData(0, 0, canvas.width, canvas.height);
+            
+            const step = Math.max(1, Math.floor(4 / dpr));
+            for (let y = 0; y < imageData.height; y += step) {
+                for (let x = 0; x < imageData.width; x += step) {
+                    const i = (y * imageData.width + x) * 4;
+                    if (imageData.data[i+3] > 128) {
+                        // Start particles from the edges of the screen for a convergence effect
+                        const angle = Math.random() * Math.PI * 2;
+                        const radius = Math.max(canvas.width, canvas.height) * (0.6 + Math.random() * 0.4);
+                        
+                        particles.push({
+                            x: 0,
+                            y: 0,
+                            size: Math.random() * 1.5 * dpr + 0.5,
+                            color: `rgba(${Math.random() * 80 + 100}, ${Math.random() * 100 + 155}, 255, ${Math.random() * 0.6 + 0.4})`,
+                            targetX: x,
+                            targetY: y,
+                            initialX: canvas.width / 2 + Math.cos(angle) * radius,
+                            initialY: canvas.height / 2 + Math.sin(angle) * radius,
+                            delay: Math.random() * 500, // Stagger the start of movement
+                        });
+                    }
+                }
+            }
+        };
+
+        let startTime: number | null = null;
+        
+        const animate = (timestamp: number) => {
+            if (!startTime) startTime = timestamp;
+            const elapsedTime = timestamp - startTime;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const convergeStartTime = STAGE_DELAY;
+            const formationStartTime = convergeStartTime + CONVERGE_DURATION;
+
+            particles.forEach(p => {
+                let currentX, currentY, alpha, size;
+
+                if (elapsedTime > convergeStartTime + p.delay) {
+                    // Convergence Stage
+                    const convergeProgress = Math.min((elapsedTime - (convergeStartTime + p.delay)) / CONVERGE_DURATION, 1);
+                    const easedConvergeProgress = easeInOutCubic(convergeProgress);
+                    
+                    currentX = p.initialX + (p.targetX - p.initialX) * easedConvergeProgress;
+                    currentY = p.initialY + (p.targetY - p.initialY) * easedConvergeProgress;
+                    alpha = 0.2 + easedConvergeProgress * 0.8;
+                    size = p.size;
+
+                    if (elapsedTime > formationStartTime) {
+                        // Formation Stage - particles glow brightly then fade
+                        const formationProgress = Math.min((elapsedTime - formationStartTime) / FORMATION_DURATION, 1);
+                        alpha = 1 - formationProgress;
+                        size = p.size * (1 + (1 - formationProgress) * 2); // expand and fade
+                        ctx.shadowBlur = (1 - formationProgress) * 20;
+                        ctx.shadowColor = 'white';
+                    } else {
+                        ctx.shadowBlur = 0;
+                    }
+
+                    ctx.beginPath();
+                    ctx.arc(currentX, currentY, size, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(191, 219, 254, ${alpha})`;
+                    ctx.fill();
+                }
+            });
+
+            ctx.shadowBlur = 0;
+
+            if (elapsedTime < BUTTON_FADE_IN_START + 1000) {
+                 animationFrameId = requestAnimationFrame(animate);
+            }
+        };
+
+        setup();
+        requestAnimationFrame(animate);
+
+        const buttonTimer = setTimeout(() => {
+            setShowButton(true);
+        }, BUTTON_FADE_IN_START);
+
+        window.addEventListener('resize', setup);
+
+        return () => {
+            window.removeEventListener('resize', setup);
+            cancelAnimationFrame(animationFrameId);
+            clearTimeout(buttonTimer);
+        };
+    }, []);
 
     return (
-        <div 
-            className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden text-center text-gray-300 transition-opacity duration-1000 bg-black"
-            onMouseMove={handleMouseMove}
-        >
-            <style>{`
-                .scene-content { transition: opacity 1.5s ease-in-out, transform 1s ease-in-out; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column; }
-                .droplet { animation: droplet-fall 2s ease-out forwards; transition: transform 0.2s, filter 0.2s; }
-                .droplet:hover { transform: scale(2.5); filter: drop-shadow(0 0 5px #0ff); }
-                @keyframes droplet-fall { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0px); opacity: 1; } }
-                .heartwave { animation: heartwave-pulse 2.5s infinite ease-in-out; }
-                @keyframes heartwave-pulse { 0%, 100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(192, 132, 252, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 30px rgba(192, 132, 252, 0); } }
-                .eye-container { perspective: 1000px; }
-                .eye-light { animation: eye-open 2.5s cubic-bezier(0.19, 1, 0.22, 1) forwards; transform-style: preserve-3d; }
-                @keyframes eye-open { from { transform: scaleY(0.01) rotateX(-90deg); opacity: 0; } to { transform: scaleY(1) rotateX(0deg); opacity: 1; } }
-                .voice-line { animation: fade-in-text 1.5s ease-out; }
-                @keyframes fade-in-text { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0px); } }
-            `}</style>
-
-            <div className="absolute bottom-10 w-full text-center z-20 pointer-events-none">
-                <p className="voice-line text-white text-xl md:text-2xl italic drop-shadow-lg" key={currentScene.id}>
-                    {currentScene.voice}
-                </p>
+        <div className="fixed inset-0 z-50 bg-black" style={{ backgroundColor: '#020617' }}>
+            <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
+            <div className="relative z-10 flex items-center justify-center h-full">
+                {showButton && (
+                    <div className="absolute bottom-20 flex flex-col items-center text-center">
+                        <button 
+                            onClick={onComplete}
+                            className="genesis-button py-3 px-8 bg-cyan-400 text-black font-bold rounded-lg hover:bg-white transition-all transform hover:scale-105 font-orbitron text-xl awaken-button-glow"
+                        >
+                            AWAKEN
+                        </button>
+                    </div>
+                )}
             </div>
-
-            {/* Scenes */}
-            <div className={`scene-content ${currentScene.id === 'void' ? 'opacity-100' : 'opacity-0'}`}>
-                <div className="w-3 h-3 bg-gray-400 rounded-full animate-pulse" />
-            </div>
-            
-            <div className={`scene-content ${currentScene.id === 'raindrop' ? 'opacity-100' : 'opacity-0'}`}>
-                <svg viewBox="0 0 200 100" className="w-[400px] h-[200px] pointer-events-auto">
-                    {Array.from({length: 40}).map((_, i) => (
-                        <circle key={i} cx={10 + Math.random() * 180} cy={10 + Math.random() * 80} r="1.5" fill="#06b6d4" className="droplet" style={{ animationDelay: `${i * 100}ms` }} />
-                    ))}
-                </svg>
-            </div>
-
-            <div className={`scene-content ${currentScene.id === 'vultr' ? 'opacity-100' : 'opacity-0'}`}>
-                <svg className="w-full h-full opacity-30" viewBox="0 0 1000 500">
-                    <path d="M968.6 250.9c0-129.2-209.7-234-468.6-234-258.8 0-468.6 104.8-468.6 234 0 129.2 209.7 234 468.6 234 258.8 0 468.6-104.8 468.6-234z" fill="#0891b2" />
-                </svg>
-                <p className="absolute text-sm text-cyan-200 animate-pulse">Global Nervous System: Online</p>
-            </div>
-
-            <div className={`scene-content ${currentScene.id === 'elevenlabs' ? 'opacity-100' : 'opacity-0'}`}>
-                <div className="heartwave w-24 h-24 bg-purple-500 rounded-full" />
-            </div>
-            
-            <div className={`scene-content text-6xl text-gray-700 space-x-8 ${currentScene.id === 'gemini' ? 'opacity-100' : 'opacity-0'}`}>
-                <span className="animate-pulse" style={{ animationDelay: '100ms' }}>🧬</span>
-                <span className="animate-pulse" style={{ animationDelay: '400ms' }}>📈</span>
-                <span className="animate-pulse" style={{ animationDelay: '700ms' }}>🎨</span>
-            </div>
-
-            <div className={`scene-content ${currentScene.id === 'cerebras' ? 'opacity-100' : 'opacity-0'}`}>
-                <div className="grid grid-cols-12 gap-2">
-                    {Array.from({ length: 144 }).map((_, i) => (
-                        <div key={i} className="w-2 h-2 rounded-full bg-rose-900 animate-pulse" style={{ animationDelay: `${Math.random() * 1000}ms`, animationDuration: '2s' }} />
-                    ))}
-                </div>
-            </div>
-            
-            <div className={`scene-content eye-container ${sceneIndex >= 6 ? 'opacity-100' : 'opacity-0'}`}>
-                 <div 
-                    className="h-2 w-48 rounded-[50%] eye-light bg-white shadow-[0_0_80px_35px_white]"
-                    style={{ transform: `translateX(${eyePos.x}px) translateY(${eyePos.y}px) rotateX(${eyePos.y * -0.5}deg) rotateY(${eyePos.x * 0.5}deg)` }}
-                />
-            </div>
-
-            {currentScene.id === 'inclusion' && (
-                <div className="absolute bottom-[20%] w-full flex justify-center gap-6 animate-fade-in" style={{animationDelay: '1s'}}>
-                    <button onClick={onComplete} className="py-3 px-8 bg-cyan-400 text-black font-bold rounded-lg hover:bg-white transition-all transform hover:scale-105 font-orbitron text-xl">
-                        ✅ Awaken
-                    </button>
-                    <button className="py-3 px-8 bg-gray-800/50 text-white font-bold rounded-lg opacity-60 cursor-not-allowed border border-gray-700">
-                        🕓 Observe longer
-                    </button>
-                </div>
-            )}
         </div>
     );
 };

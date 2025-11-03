@@ -1,168 +1,260 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>VultraDrop: AI Clip Generator</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>VultraDrop</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-      body {
-        font-family: 'Roboto', sans-serif;
-        background-color: #000;
-        color: #fff;
-        overflow: hidden; /* Prevents scrollbars from the canvas */
-      }
-      #root {
-        position: relative;
-        z-index: 1;
-      }
-      #nebula-canvas {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 0;
-      }
-      h1, .font-orbitron {
-        font-family: 'Orbitron', sans-serif;
-      }
-      .pulse-glow:not(:disabled) {
-        animation: pulse-glow-animation 2s infinite;
-      }
-      @keyframes pulse-glow-animation {
-        0%, 100% {
-          box-shadow: 0 0 10px rgba(0, 255, 255, 0.3), 0 0 10px rgba(191, 0, 255, 0.3);
+        :root {
+            --font-display: 'Orbitron', sans-serif;
+            --font-body: 'Exo 2', sans-serif;
         }
-        50% {
-          box-shadow: 0 0 20px rgba(0, 255, 255, 0.6), 0 0 20px rgba(191, 0, 255, 0.6);
+
+        /* NEBULA THEME (DEFAULT) */
+        body.nebula {
+            --theme-bg-primary: #020617;
+            --theme-bg-secondary: rgba(15, 23, 42, 0.6);
+            --theme-bg-tertiary: rgba(30, 41, 59, 0.7);
+            --theme-bg-hover: rgba(51, 65, 85, 0.8);
+            --theme-border-color: rgba(56, 189, 248, 0.2);
+            --theme-text-title: #e0f2fe;
+            --theme-text-light: #cbd5e1;
+            --theme-text-subtitle: #94a3b8;
+            --theme-accent1: #0ea5e9; /* sky */
+            --theme-accent2: #a855f7; /* purple */
+            --theme-glow-light: rgba(14, 165, 233, 0.4);
+            --theme-glow-heavy: rgba(168, 85, 247, 0.6);
         }
-      }
+
+        /* CYBERPUNK THEME */
+        body.cyberpunk {
+            --theme-bg-primary: #0a0113;
+            --theme-bg-secondary: rgba(26, 7, 43, 0.6);
+            --theme-bg-tertiary: rgba(66, 21, 102, 0.7);
+            --theme-bg-hover: rgba(117, 42, 179, 0.8);
+            --theme-border-color: rgba(253, 224, 71, 0.3);
+            --theme-text-title: #fecdd3;
+            --theme-text-light: #f9a8d4;
+            --theme-text-subtitle: #fbcfe8;
+            --theme-accent1: #f43f5e; /* rose */
+            --theme-accent2: #fde047; /* yellow */
+            --theme-glow-light: rgba(244, 63, 94, 0.5);
+            --theme-glow-heavy: rgba(253, 224, 71, 0.7);
+        }
+
+        /* BIOSYNTH THEME */
+        body.biosynth {
+            --theme-bg-primary: #051410;
+            --theme-bg-secondary: rgba(3, 24, 15, 0.6);
+            --theme-bg-tertiary: rgba(6, 64, 42, 0.7);
+            --theme-bg-hover: rgba(16, 107, 72, 0.8);
+            --theme-border-color: rgba(74, 222, 128, 0.3);
+            --theme-text-title: #dcfce7;
+            --theme-text-light: #bbf7d0;
+            --theme-text-subtitle: #86efac;
+            --theme-accent1: #4ade80; /* green */
+            --theme-accent2: #2dd4bf; /* teal */
+            --theme-glow-light: rgba(74, 222, 128, 0.5);
+            --theme-glow-heavy: rgba(45, 212, 191, 0.6);
+        }
+
+        /* STARLIGHT THEME */
+        body.starlight {
+            --theme-bg-primary: #111827;
+            --theme-bg-secondary: rgba(31, 41, 55, 0.6);
+            --theme-bg-tertiary: rgba(55, 65, 81, 0.7);
+            --theme-bg-hover: rgba(75, 85, 99, 0.8);
+            --theme-border-color: rgba(229, 231, 235, 0.2);
+            --theme-text-title: #f9fafb;
+            --theme-text-light: #e5e7eb;
+            --theme-text-subtitle: #d1d5db;
+            --theme-accent1: #d1d5db; /* gray */
+            --theme-accent2: #ffffff; /* white */
+            --theme-glow-light: rgba(229, 231, 235, 0.3);
+            --theme-glow-heavy: rgba(255, 255, 255, 0.4);
+        }
+
+        body {
+            margin: 0;
+            font-family: var(--font-body), -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background-color: var(--theme-bg-primary);
+            background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.03) 1px, transparent 0);
+            background-size: 2rem 2rem;
+            overflow-x: hidden;
+            color: var(--theme-text-light);
+            transition: background-color 0.5s ease;
+        }
+
+        .font-orbitron {
+            font-family: var(--font-display);
+        }
+
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        .pulse-glow {
+            animation: pulse-glow 2.5s infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            from {
+                box-shadow: 0 0 8px var(--theme-accent1), 0 0 16px var(--theme-accent2);
+            }
+            to {
+                box-shadow: 0 0 16px var(--theme-accent1), 0 0 32px var(--theme-accent2);
+            }
+        }
+        
+        .animate-fade-in {
+            animation: fade-in 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0px); }
+        }
+
+        @keyframes text-glitch {
+            0% { text-shadow: 0 0 10px var(--theme-glow-heavy), 2px 2px 0 var(--theme-accent2), -2px -2px 0 var(--theme-accent1); opacity: 0.9; }
+            20% { text-shadow: 0 0 10px var(--theme-glow-heavy), -2px 0 0 var(--theme-accent2), 2px 0 0 var(--theme-accent1); }
+            40% { text-shadow: 0 0 10px var(--theme-glow-heavy), 0 -2px 0 var(--theme-accent2), 0 2px 0 var(--theme-accent1); }
+            60% { text-shadow: 0 0 10px var(--theme-glow-heavy), 3px 0 0 var(--theme-accent2), -3px 0 0 var(--theme-accent1); }
+            80% { text-shadow: 0 0 10px var(--theme-glow-heavy), 0 3px 0 var(--theme-accent2), 0 -3px 0 var(--theme-accent1); }
+            100% { text-shadow: 0 0 10px var(--theme-glow-heavy), 0 0 0 transparent, 0 0 0 transparent; opacity: 1; }
+        }
+        
+        .text-glitch-animation {
+             animation: text-glitch 0.2s 0.5s forwards;
+        }
+
+        @keyframes background-pan {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .blueprint-bg {
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            background: radial-gradient(circle, var(--theme-glow-light) 0%, transparent 60%);
+            mask-image: url('/public/vultradrop-blueprint.svg');
+            mask-size: cover;
+            mask-position: center;
+            animation: background-pan 60s linear infinite;
+            opacity: 0.2;
+        }
+
+        @keyframes heartbeat-pulse { 
+            0%, 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(192, 132, 252, 0.7); } 
+            70% { transform: scale(1.05); box-shadow: 0 0 0 40px rgba(192, 132, 252, 0); } 
+        }
+
+        .genesis-text {
+            animation: genesis-fade-in 2s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+        }
+
+        @keyframes genesis-fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.98);
+                filter: blur(5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0);
+            }
+        }
+
+        .genesis-button {
+            animation: genesis-fade-in 1.5s 1s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+            opacity: 0;
+        }
+
+        .awaken-button-glow {
+            box-shadow: 0 0 15px var(--theme-accent1), 0 0 25px var(--theme-accent2);
+            animation: pulse-glow 2.5s infinite alternate;
+        }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react": "https://aistudiocdn.com/react@^19.2.0",
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.28.0"
-  }
-}
-</script>
 </head>
-  <body>
-    <canvas id="nebula-canvas"></canvas>
+<body class="nebula">
+    <canvas id="bg-canvas"></canvas>
     <div id="root"></div>
+
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://aistudiocdn.com/react@^19.2.0",
+        "react/": "https://aistudiocdn.com/react@^19.2.0/",
+        "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+        "@google/genai": "https://aistudiocdn.com/@google/genai@^1.28.0"
+      }
+    }
+    </script>
     <script type="module" src="/index.tsx"></script>
     <script>
-      // Nebula background script
-      const canvas = document.getElementById('nebula-canvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+        // Cosmic Nebula background script
+        const canvas = document.getElementById('bg-canvas');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            let width, height, particles;
 
-      let stars = [];
-      const numStars = 200;
+            function resize() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+                particles = [];
+                const particleCount = Math.min(100, Math.floor(width * height / 20000));
+                for (let i = 0; i < particleCount; i++) {
+                    particles.push({
+                        x: Math.random() * width,
+                        y: Math.random() * height,
+                        vx: (Math.random() - 0.5) * 0.3,
+                        vy: (Math.random() - 0.5) * 0.3,
+                        radius: Math.random() * 1.5 + 0.5,
+                        color: `rgba(${Math.random() * 50 + 150}, ${Math.random() * 80 + 175}, 255, ${Math.random() * 0.5 + 0.2})`
+                    });
+                }
+            }
+            window.addEventListener('resize', resize);
+            resize();
 
-      for(let i = 0; i < numStars; i++) {
-        stars.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          radius: Math.random() * 1.2,
-          alpha: Math.random(),
-          velocity: {
-            x: (Math.random() - 0.5) * 0.1,
-            y: (Math.random() - 0.5) * 0.1
-          }
-        });
-      }
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+                
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
 
-      let noise_t = 0;
-      
-      const permutation = [151,160,137,91,90,15,131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,190, 6,148,247,120,234,75,0,26,197,62,94,252,219,203,117,35,11,32,57,177,33,88,237,149,56,87,174,20,125,136,171,168, 68,175,74,165,71,134,139,48,27,166,77,146,158,231,83,111,229,122,60,211,133,230,220,105,92,41,55,46,245,40,244,102,143,54, 65,25,63,161, 1,216,80,73,209,76,132,187,208, 89,18,169,200,196,135,130,116,188,159,86,164,100,109,198,173,186, 3,64,52,217,226,250,124,123,5,202,38,147,118,126,255,82,85,212,207,206,59,227,47,16,58,17,182,189,28,42,223,183,170,213,119,248,152, 2,44,154,163, 70,221,153,101,155,167, 43,172,9,129,22,39,253, 19,98,108,110,79,113,224,232,178,185, 112,104,218,246,97,228,251,34,242,193,238,210,144,12,191,179,162,241, 81,51,145,235,249,14,239,107,49,192,214, 31,181,199,106,157,184, 84,204,176,115,121,50,45,127, 4,150,254,138,236,205,93,222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180];
-      const p = new Array(512);
-      for (let i=0; i < 256 ; i++) p[256+i] = p[i] = permutation[i];
-      const fade = t => t * t * t * (t * (t * 6 - 15) + 10);
-      const lerp = (t, a, b) => a + t * (b - a);
-      const grad = (hash, x, y) => {
-        const h = hash & 15;
-        const u = h < 8 ? x : y;
-        const v = h < 4 ? y : h === 12 || h === 14 ? x : 0;
-        return ((h & 1) === 0 ? u : -u) + ((h & 2) === 0 ? v : -v);
-      }
-      const noise = (x, y) => {
-        const X = Math.floor(x) & 255;
-        const Y = Math.floor(y) & 255;
-        x -= Math.floor(x);
-        y -= Math.floor(y);
-        const u = fade(x);
-        const v = fade(y);
-        const a = p[X] + Y, b = p[X + 1] + Y;
-        return lerp(v, lerp(u, grad(p[a], x, y), grad(p[b], x - 1, y)),
-                       lerp(u, grad(p[a + 1], x, y - 1), grad(p[b + 1], x - 1, y - 1)));
-      }
+                    if (p.x < 0 || p.x > width) p.vx *= -1;
+                    if (p.y < 0 || p.y > height) p.vy *= -1;
+                    
+                    ctx.beginPath();
+                    const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.radius);
+                    g.addColorStop(0, p.color);
+                    g.addColorStop(1, 'transparent');
+                    ctx.fillStyle = g;
+                    ctx.fillRect(p.x - p.radius, p.y - p.radius, p.radius * 2, p.radius * 2);
+                });
 
-      function animate() {
-        ctx.globalCompositeOperation = 'source-over';
-        ctx.fillStyle = 'rgba(0, 0, 5, 0.1)'; 
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        ctx.globalCompositeOperation = 'lighter';
-        
-        noise_t += 0.0005;
-        const scale = 0.002;
-        
-        const imageData = ctx.createImageData(canvas.width, canvas.height);
-        const data = imageData.data;
-        
-        const timeColorShift = Math.sin(noise_t * 10);
-
-        for (let x = 0; x < canvas.width; x++) {
-          for (let y = 0; y < canvas.height; y++) {
-            const i = (y * canvas.width + x) * 4;
-            
-            const n1 = Math.abs(noise(x * scale + noise_t, y * scale - noise_t));
-            const n2 = Math.abs(noise(x * scale * 1.8 - noise_t * 1.3, y * scale * 1.8 + noise_t * 1.3));
-            const n3 = Math.abs(noise(x * scale * 0.4 + noise_t * 0.7, y * scale * 0.4 - noise_t * 0.7));
-
-            data[i] = n1 * 80 + n3 * 120 + timeColorShift * 50;    // R - More vibrant reds and purples
-            data[i + 1] = n2 * 120 + n1 * 30;                      // G - Richer greens and cyans
-            data[i + 2] = n3 * 150 + n2 * 60 - timeColorShift * 50; // B - Deeper blues and magentas
-            data[i + 3] = (n1 + n2 + n3) * 60;                      // Alpha
-          }
+                requestAnimationFrame(animate);
+            }
+            animate();
         }
-        ctx.putImageData(imageData, 0, 0);
-
-        // Stars
-        stars.forEach(star => {
-          ctx.beginPath();
-          ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha})`;
-          ctx.fill();
-
-          star.x += star.velocity.x;
-          star.y += star.velocity.y;
-
-          if (star.x < 0 || star.x > canvas.width) star.velocity.x *= -1;
-          if (star.y < 0 || star.y > canvas.height) star.velocity.y *= -1;
-          
-          star.alpha += (Math.random() - 0.5) * 0.05;
-          if(star.alpha < 0) star.alpha = 0;
-          if(star.alpha > 1) star.alpha = 1;
-        });
-
-        requestAnimationFrame(animate);
-      }
-
-      animate();
-      window.addEventListener('resize', () => {
-          canvas.width = window.innerWidth;
-          canvas.height = window.innerHeight;
-      });
     </script>
-  </body>
+</body>
 </html>

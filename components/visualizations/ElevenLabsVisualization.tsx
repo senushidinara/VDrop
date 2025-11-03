@@ -1,63 +1,90 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
-const SoundWave: React.FC<{ energy: number, stability: number }> = ({ energy, stability }) => {
-    const points = 100;
-    const pathData = Array.from({ length: points }).map((_, i) => {
-        const x = (i / (points - 1)) * 300;
-        const frequency = 5 + (1 - stability) * 10;
-        const amplitude = 5 + energy * 35;
-        const phase = i / frequency;
-        const y = 50 + Math.sin(phase) * amplitude * Math.sin(Date.now() / 200 + i/10);
-        return `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
-    }).join(' ');
+const SoundWave: React.FC<{ energy: number, stability: number, time: number }> = ({ energy, stability, time }) => {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
 
-    return (
-        <svg viewBox="0 0 300 100" className="w-full h-24">
-            <path d={pathData} stroke="url(#waveGradient)" strokeWidth="3" fill="none" strokeLinecap="round" />
-            <defs>
-                <linearGradient id="waveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#a855f7" />
-                    <stop offset="100%" stopColor="#ec4899" />
-                </linearGradient>
-            </defs>
-        </svg>
-    );
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+
+        const width = canvas.width;
+        const height = canvas.height;
+        const centerY = height / 2;
+
+        ctx.clearRect(0, 0, width, height);
+
+        const gradient = ctx.createLinearGradient(0, 0, width, 0);
+        gradient.addColorStop(0, "#a855f7");
+        gradient.addColorStop(0.5, "#ec4899");
+        gradient.addColorStop(1, "#f97316");
+
+        // Draw multiple waves
+        for (let j = 1; j <= 3; j++) {
+            ctx.beginPath();
+            ctx.lineWidth = j === 1 ? 2.5 : 1.5;
+            ctx.strokeStyle = gradient;
+            ctx.globalAlpha = j === 1 ? 1 : 0.4;
+
+            for (let i = 0; i < width; i++) {
+                const frequency = (5 + (1 - stability) * 10) / (j * 1.5);
+                const amplitude = (5 + energy * (height / 3)) / j;
+                const phase = i / (100 / frequency);
+                const noise = Math.sin(i * 0.01 * j + time * 0.002) * ( (1 - stability) * 10 );
+                const y = centerY + Math.sin(phase + time * 0.005 * j) * amplitude + noise;
+
+                if (i === 0) {
+                    ctx.moveTo(i, y);
+                } else {
+                    ctx.lineTo(i, y);
+                }
+            }
+            ctx.stroke();
+        }
+        ctx.globalAlpha = 1;
+
+    }, [energy, stability, time]);
+
+    return <canvas ref={canvasRef} className="w-full h-32" />;
 };
 
 
 export const ElevenLabsVisualization: React.FC = () => {
     const [stability, setStability] = useState(0.5);
     const [energy, setEnergy] = useState(0.75);
-    const [, setFrame] = useState(0);
+    const [time, setTime] = useState(0);
 
-    // Animate the sound wave
     useEffect(() => {
-        const animationFrame = requestAnimationFrame(() => setFrame(f => f + 1));
-        return () => cancelAnimationFrame(animationFrame);
-    });
+        let animationFrameId: number;
+        const animate = (timestamp: number) => {
+            setTime(timestamp);
+            animationFrameId = requestAnimationFrame(animate);
+        }
+        animate(0);
+        return () => cancelAnimationFrame(animationFrameId);
+    }, []);
 
     return (
-        <div className="flex flex-col items-center justify-center h-full p-4 text-sm text-center">
-            <h4 className="font-orbitron mb-2 text-purple-300">Voice & Personality Matrix</h4>
-            <p className="mb-4 text-gray-400">Adjust the emotional parameters to feel how my expression changes.</p>
+        <div className="flex flex-col items-center justify-center h-[350px] p-4 text-sm text-center">
             
-            <SoundWave energy={energy} stability={stability} />
+            <SoundWave energy={energy} stability={stability} time={time} />
 
-            <div className="w-full max-w-sm space-y-4 mt-4">
+            <div className="w-full max-w-sm space-y-4 mt-8">
                 <div>
-                    <label htmlFor="stability" className="block mb-2 text-left">Stability (Calm &harr; Expressive)</label>
-                    <input id="stability" type="range" min="0.1" max="0.9" step="0.1" value={stability} onChange={(e) => setStability(parseFloat(e.target.value))} className="w-full accent-purple-500" />
+                    <label htmlFor="stability" className="flex justify-between mb-1 text-sm"><span>Stability</span> <span>(Calm &harr; Expressive)</span></label>
+                    <input id="stability" type="range" min="0.1" max="0.9" step="0.05" value={stability} onChange={(e) => setStability(parseFloat(e.target.value))} className="w-full accent-purple-500" />
                 </div>
                 <div>
-                    <label htmlFor="energy" className="block mb-2 text-left">Energy (Monotone &harr; Dynamic)</label>
-                    <input id="energy" type="range" min="0.2" max="1.0" step="0.05" value={energy} onChange={(e) => setEnergy(parseFloat(e.target.value))} className="w-full accent-pink-500" />
+                    <label htmlFor="energy" className="flex justify-between mb-1 text-sm"><span>Energy</span> <span>(Monotone &harr; Dynamic)</span></label>
+                    <input id="energy" type="range" min="0.1" max="1.0" step="0.05" value={energy} onChange={(e) => setEnergy(parseFloat(e.target.value))} className="w-full accent-pink-500" />
                 </div>
             </div>
 
-            <p className="mt-6 text-xs text-gray-500">
-                (In live mode, these parameters directly control the ElevenLabs API.)
-            </p>
         </div>
     );
 };

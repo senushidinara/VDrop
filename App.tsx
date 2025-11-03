@@ -1,25 +1,24 @@
 import React, { useState } from 'react';
 import GenesisDemo from './components/GenesisDemo';
 import LiveSystem from './components/LiveSystem';
+import { ThemeProvider } from './contexts/ThemeContext';
 
 const App: React.FC = () => {
-  const [demoCompleted, setDemoCompleted] = useState(false);
+    const [showGenesis, setShowGenesis] = useState(true);
 
-  // For development, you can skip the demo by setting this to true
-  // useState(true);
-
-  return (
-    <>
-      {!demoCompleted && (
-        <GenesisDemo 
-          onComplete={() => setDemoCompleted(true)} 
-        />
-      )}
-      <div className={`transition-opacity duration-1000 ${demoCompleted ? 'opacity-100' : 'opacity-0'}`}>
-        {demoCompleted && <LiveSystem />}
-      </div>
-    </>
-  );
+    const handleGenesisComplete = () => {
+        setShowGenesis(false);
+    };
+    
+    return (
+        <ThemeProvider>
+            {showGenesis ? (
+                <GenesisDemo onComplete={handleGenesisComplete} />
+            ) : (
+                <LiveSystem />
+            )}
+        </ThemeProvider>
+    );
 };
 
 export default App;
