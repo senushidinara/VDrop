@@ -106,12 +106,17 @@ const PodcastPlayer: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             
             if (timeInLine >= script[lineIndex].duration) {
                 timeInLine = 0;
-                lineIndex = (lineIndex + 1);
-                 if (lineIndex >= script.length) {
-                    lineIndex = 0;
+                // FIX: Use modulo operator for a more robust and cleaner way to loop through the script.
+                // This prevents any possibility of an off-by-one or index-out-of-bounds error.
+                const nextLineIndex = (lineIndex + 1) % script.length;
+                
+                // Reset total time for progress bar when looping back to the start
+                if (nextLineIndex === 0) {
                     totalTime = 0;
-                 }
-                 setCurrentLine(lineIndex);
+                }
+                
+                lineIndex = nextLineIndex;
+                setCurrentLine(lineIndex);
             }
             setProgress((totalTime / totalDuration) * 100);
         };
