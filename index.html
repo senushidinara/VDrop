@@ -129,15 +129,16 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            max-width: 600px;
+            max-width: 640px;
             text-align: center;
             padding: 2rem;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.75);
+            backdrop-filter: blur(8px) saturate(120%);
             border-radius: 1rem;
-            border: 1px solid var(--theme-border-color);
-            z-index: 10;
-            pointer-events: none;
+            border: 1px solid rgba(125,211,252,0.25);
+            z-index: 40;
+            pointer-events: auto;
+            color: var(--theme-text-title);
         }
         
         .hud-container {
