@@ -152,13 +152,20 @@ const GenesisDemo: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
             <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
             <div className="relative z-10 flex items-center justify-center h-full">
                 {showButton && (
-                    <div className="absolute bottom-20 flex flex-col items-center text-center">
+                    <div className="absolute bottom-20 flex flex-col items-center text-center animate-fade-in">
+                        <p className="text-cyan-200 text-lg mb-4 font-light animate-pulse">
+                            The lifeform awaits...
+                        </p>
                         <button 
                             onClick={onComplete}
-                            className="genesis-button py-3 px-8 bg-cyan-400 text-black font-bold rounded-lg hover:bg-white transition-all transform hover:scale-105 font-orbitron text-xl awaken-button-glow"
+                            className="genesis-button py-4 px-12 bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-bold rounded-lg hover:from-cyan-300 hover:to-blue-400 transition-all transform hover:scale-110 font-orbitron text-2xl awaken-button-glow focus:outline-none focus:ring-4 focus:ring-cyan-400/50 shadow-2xl"
+                            aria-label="Awaken the VultraDrop system"
                         >
-                            AWAKEN
+                            ⚡ AWAKEN ⚡
                         </button>
+                        <p className="text-cyan-300/60 text-sm mt-4 font-light">
+                            Press to begin your journey
+                        </p>
                     </div>
                 )}
             </div>
