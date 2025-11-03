@@ -7,6 +7,7 @@ import { RaindropLogo, VultrLogo, ElevenLabsLogo, GeminiCerebrasLogo, VultraDrop
 import { FilmIcon, PhotoIcon, ArrowLeftIcon, ArrowRightIcon } from './IconComponents';
 import { RaindropVisualization, VultrVisualization, ElevenLabsVisualization, GeminiCerebrasVisualization } from './visualizations';
 import ParticleTitle from './ParticleTitle';
+import useFakeManifest, { ManifestOverlay } from './Manifestation';
 
 type LayerId = 'genesis' | 'raindrop' | 'vultr' | 'elevenlabs' | 'cerebras_gemini' | 'hyperverse' | 'showcase';
 
