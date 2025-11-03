@@ -5,14 +5,14 @@
       <stop offset="100%" stop-color="#0f172a"/>
     </linearGradient>
     <style>
-      .title { font-family: 'Orbitron', sans-serif; font-size: 20px; font-weight: bold; text-anchor: middle; }
-      .subtitle { font-family: 'Exo 2', sans-serif; font-size: 12px; text-anchor: middle; fill: #94a3b8; }
-      .quote { font-family: 'Exo 2', sans-serif; font-size: 14px; text-anchor: middle; fill: #e0f2fe; font-style: italic; }
+      .title { font-size: 20px; font-weight: bold; text-anchor: middle; }
+      .subtitle { font-size: 12px; text-anchor: middle; fill: #94a3b8; }
+      .quote { font-size: 14px; text-anchor: middle; fill: #e0f2fe; font-style: italic; }
     </style>
   </defs>
 
   <text x="400" y="40" class="title" fill="#e0f2fe" style="font-size:28px;">THE GENESIS STORY</text>
-  <text x="400" y="65" class="subtitle" style="font-size:14px; font-family: 'Exo 2', sans-serif;">"When Cloud, AI, and Consciousness Collide"</text>
+  <text x="400" y="65" class="subtitle" style="font-size:14px;">"When Cloud, AI, and Consciousness Collide"</text>
   
   <!-- Panel 1: The Void -->
   <g id="panel1" transform="translate(100, 100)">

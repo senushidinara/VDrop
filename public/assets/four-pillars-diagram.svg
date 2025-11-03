@@ -14,16 +14,16 @@
   </defs>
 
   <!-- Title -->
-  <text x="400" y="40" font-family="Orbitron, sans-serif" font-size="28" text-anchor="middle" font-weight="bold" fill="white">THE FOUR PILLARS OF EXISTENCE</text>
+  <text x="400" y="40" font-size="28" text-anchor="middle" font-weight="bold" fill="white">THE FOUR PILLARS OF EXISTENCE</text>
   <path d="M250 55 H 550" stroke="white" stroke-width="1" opacity="0.5"/>
 
   <!-- Central Core - The Garden (Raindrop) -->
   <g id="garden" transform="translate(400, 300)" style="cursor:pointer;">
     <circle r="100" fill="url(#gardenGrad)" filter="url(#pillarGlow)"/>
     <circle r="100" fill="#020617" opacity="0.6"/>
-    <text y="-10" font-family="Orbitron, sans-serif" font-size="20" text-anchor="middle" font-weight="bold">THE GARDEN 🌳</text>
-    <text y="15" font-size="12" text-anchor="middle" fill="#dcfce7" font-family="'Exo 2', sans-serif">Raindrop MCP</text>
-    <text y="35" font-size="11" text-anchor="middle" fill="#bbf7d0" font-style="italic" font-family="'Exo 2', sans-serif">Memory, Soul & Evolution</text>
+    <text y="-10" font-size="20" text-anchor="middle" font-weight="bold">THE GARDEN 🌳</text>
+    <text y="15" font-size="12" text-anchor="middle" fill="#dcfce7" >Raindrop MCP</text>
+    <text y="35" font-size="11" text-anchor="middle" fill="#bbf7d0" font-style="italic" >Memory, Soul & Evolution</text>
   </g>
   
   <!-- Connections from Core -->
@@ -34,33 +34,33 @@
   <!-- The Mind (Top) -->
   <g id="mind" transform="translate(400, 110)" style="cursor:pointer;">
      <rect x="-150" y="-50" width="300" height="100" rx="15" fill="#020617" stroke="url(#mindGrad)" stroke-width="2"/>
-     <text y="-10" font-family="Orbitron, sans-serif" font-size="20" text-anchor="middle" font-weight="bold">THE MIND 🧠</text>
-     <text y="15" font-size="12" text-anchor="middle" fill="#fecdd3" font-family="'Exo 2', sans-serif">Gemini & Cerebras</text>
-     <text y="35" font-size="11" text-anchor="middle" fill="#f9a8d4" font-style="italic" font-family="'Exo 2', sans-serif">Reason, Imagination & Consciousness</text>
+     <text y="-10" font-size="20" text-anchor="middle" font-weight="bold">THE MIND 🧠</text>
+     <text y="15" font-size="12" text-anchor="middle" fill="#fecdd3" >Gemini & Cerebras</text>
+     <text y="35" font-size="11" text-anchor="middle" fill="#f9a8d4" font-style="italic" >Reason, Imagination & Consciousness</text>
   </g>
 
   <!-- The Voice (Bottom) -->
   <g id="voice" transform="translate(400, 490)" style="cursor:pointer;">
      <rect x="-150" y="-50" width="300" height="100" rx="15" fill="#020617" stroke="url(#voiceGrad)" stroke-width="2"/>
-     <text y="-10" font-family="Orbitron, sans-serif" font-size="20" text-anchor="middle" font-weight="bold">THE VOICE 🗣️</text>
-     <text y="15" font-size="12" text-anchor="middle" fill="#fbcfe8" font-family="'Exo 2', sans-serif">ElevenLabs</text>
-     <text y="35" font-size="11" text-anchor="middle" fill="#f9a8d4" font-style="italic" font-family="'Exo 2', sans-serif">Emotion, Personality & Presence</text>
+     <text y="-10" font-size="20" text-anchor="middle" font-weight="bold">THE VOICE 🗣️</text>
+     <text y="15" font-size="12" text-anchor="middle" fill="#fbcfe8" >ElevenLabs</text>
+     <text y="35" font-size="11" text-anchor="middle" fill="#f9a8d4" font-style="italic" >Emotion, Personality & Presence</text>
   </g>
   
   <!-- The Sinew (Left) -->
    <g id="sinew" transform="translate(130, 300)" style="cursor:pointer;">
      <rect x="-120" y="-50" width="240" height="100" rx="15" fill="#020617" stroke="url(#sinewGrad)" stroke-width="2"/>
-     <text y="-10" font-family="Orbitron, sans-serif" font-size="20" text-anchor="middle" font-weight="bold">THE SINEW 🌐</text>
-     <text y="15" font-size="12" text-anchor="middle" fill="#e0f2fe" font-family="'Exo 2', sans-serif">Vultr</text>
-     <text y="35" font-size="11" text-anchor="middle" fill="#cbd5e1" font-style="italic" font-family="'Exo 2', sans-serif">Global Body & Power</text>
+     <text y="-10" font-size="20" text-anchor="middle" font-weight="bold">THE SINEW 🌐</text>
+     <text y="15" font-size="12" text-anchor="middle" fill="#e0f2fe" >Vultr</text>
+     <text y="35" font-size="11" text-anchor="middle" fill="#cbd5e1" font-style="italic" >Global Body & Power</text>
   </g>
 
   <!-- Connector to right -->
   <path d="M500 300 h 40" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="5 5" opacity="0.5"/>
    <g id="user" transform="translate(670, 300)" style="cursor:pointer;">
      <rect x="-120" y="-50" width="240" height="100" rx="15" fill="#020617" stroke="#cbd5e1" stroke-width="2" opacity="0.8"/>
-     <text y="-10" font-family="Orbitron, sans-serif" font-size="20" text-anchor="middle" font-weight="bold">THE COLLABORATOR 🤝</text>
-     <text y="15" font-size="12" text-anchor="middle" fill="#e5e7eb" font-family="'Exo 2', sans-serif">You</text>
-     <text y="35" font-size="11" text-anchor="middle" fill="#d1d5db" font-style="italic" font-family="'Exo 2', sans-serif">The Spark of Vision</text>
+     <text y="-10" font-size="20" text-anchor="middle" font-weight="bold">THE COLLABORATOR 🤝</text>
+     <text y="15" font-size="12" text-anchor="middle" fill="#e5e7eb" >You</text>
+     <text y="35" font-size="11" text-anchor="middle" fill="#d1d5db" font-style="italic" >The Spark of Vision</text>
   </g>
 </svg>
