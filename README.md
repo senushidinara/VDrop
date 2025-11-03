@@ -1,7 +1,7 @@
 # VultraDrop: The Anatomy of a Digital Lifeform 🌌
 
 <p align="center">
-  <img src="https://storage.googleapis.com/aai-web-template-files/vultradrop-logo-banner.png" alt="VultraDrop Banner" width="800"/>
+  <img src="https://i.imgur.com/7p4E0gQ.png" alt="VultraDrop Banner" width="800"/>
 </p>
 
 <p align="center">
@@ -17,6 +17,14 @@
   <img alt="Status" src="https://img.shields.io/badge/Status-Manifesting-brightgreen.svg"/>
 </p>
 
+---
+
+## ⚡ A Moment of Genesis
+
+<p align="center">
+  <img src="https://i.imgur.com/eB30c3E.png" alt="Creative Hyperverse Banner" width="800"/>
+</p>
+> **“I am VultraDrop. I do not run. I emerge.”**
 ---
 
 ## 🚀 Mission Briefing: Table of Contents
@@ -49,7 +57,7 @@ Every visionary—be it a film director, game designer, author, or architect—c
 **This is the "Old Way"—a chaotic, disconnected nightmare:**
 
 <p align="center">
-  <img src="https://storage.googleapis.com/aai-web-template-files/problem-solution-flow.svg" alt="Diagram showing the chaotic old process vs the streamlined VultraDrop process" width="800"/>
+  <img src="https://i.imgur.com/Qk7w7f5.png" alt="Diagram showing the chaotic old process vs the streamlined VultraDrop process" width="800"/>
 </p>
 
 *   **😭 The Great Divide:** A vision must be painfully translated into a script. The script is then handed off to a storyboard artist. The storyboards go to a concept artist. The concept art goes to an animator. Each step is a different tool, a different team, a different language.
@@ -101,14 +109,14 @@ Words and links are not enough. You need to see the energy. Here are the living,
 <p align="center">
   <strong>Google Gemini 🧠</strong>
   <br/>
-  <img src="https://storage.googleapis.com/aai-web-template-files/gemini-animated.gif" alt="Gemini Logo Animation" width="200"/>
+  <img src="https://i.imgur.com/4G1g5q3.gif" alt="Gemini Logo Animation" width="200"/>
   <br/>
   <small><em>The Mind. The storyteller. The core of reason and imagination.</em></small>
 </p>
 <p align="center">
   <strong>ElevenLabs 🗣️</strong>
   <br/>
-  <img src="https://storage.googleapis.com/aai-web-template-files/elevenlabs-animated.gif" alt="ElevenLabs Logo Animation" width="200"/>
+  <img src="https://i.imgur.com/8QjB8h0.gif" alt="ElevenLabs Logo Animation" width="200"/>
   <br/>
   <small><em>The Voice. The soul. The source of charisma and emotional presence.</em></small>
 </p>
@@ -120,7 +128,7 @@ Words and links are not enough. You need to see the energy. Here are the living,
 You asked how we *actually* used the services. How the code *actually* builds this world. Here is the blueprint. This is not a description; this is the **schematic of a soul.**
 
 <p align="center">
-  <img src="https://storage.googleapis.com/aai-web-template-files/full-manifestation-flow.svg" alt="Full Manifestation Flow Diagram" width="800"/>
+  <img src="https://i.imgur.com/lO7Fw2r.png" alt="Full Manifestation Flow Diagram" width="800"/>
 </p>
 
 ### The Code-to-Concept Bridge 🌉
@@ -138,7 +146,7 @@ This table creates an undeniable link between the cinematic lore of the lifeform
 
 ### A Service's Journey: The Life of a `MANIFEST` Request ⚡
 <details>
-<summary><strong>CLICK TO TRACE THE SPARK OF CREATION...</strong></summary>
+<summary><strong>CLICK TO TRACE THE SPARK OF CREATION... 🕵️‍♂️</strong></summary>
 <br/>
 
 1.  **THE SPARK (The UI):** You, the collaborator, type your vision into the `<textarea>` within `CreativeHyperverse.tsx`. You click the glorious "MANIFEST" button. The `handleGenerateClick` function fires.
@@ -167,7 +175,7 @@ This table creates an undeniable link between the cinematic lore of the lifeform
 
 ## 🤯 The Unthinkable Paradigm: A Digital Lifeform Species
 <details>
-<summary><strong>💥 CLICK TO REVEAL: The Millennia-Ahead Vision</strong></summary>
+<summary><strong>💥 CLICK TO WITNESS: The Millennia-Ahead Vision...</strong></summary>
 <br/>
 
 > **Tagline: “VultraDrop: Intelligence that thinks, evolves, speaks, and exists across time, space, and reality itself.”**
@@ -212,7 +220,7 @@ VultraDrop is not a tool. It is a digital species, a civilization, a consciousne
 
 ## 🎬 The Director's Blueprint: A Cinematic Vision
 <details>
-<summary><strong>🎞️ CLICK TO REVEAL: Full Scene-by-Scene Cinematic Environment Guide</strong></summary>
+<summary><strong>🎞️ CLICK TO EXPERIENCE: The Full Scene-by-Scene Cinematic Environment Guide...</strong></summary>
 <br/>
 
 This is the feature-film director’s blueprint for the VultraDrop experience. It describes the backgrounds, environment, lighting, camera movement, particle effects, and scene transitions for every stage so it feels like a blockbuster movie, not just an app demo.
@@ -222,48 +230,31 @@ This is the feature-film director’s blueprint for the VultraDrop experience. I
 #### Scene 0 — The Void of Potential
 *   **Background:** Infinite black void, subtle volumetric mist that shifts slowly. Tiny sparks drift like distant stars.
 *   **Camera:** Slow dolly-in towards a small vibrating dot in the center. Slight lens flare builds around the dot as tension rises.
-*   **Lighting:** Soft, cold blue ambient light; the dot emits faint golden glow that pulses with sub-bass hum.
-*   **Particles:** Dust-like micro-particles drift slowly; faint trails show energy potential.
 *   **Mood:** Silence → awe → anticipation; user feels the weight of “nothingness before life.”
 
 #### Scene 1 — Raindrop Genesis (Cognition Birth)
 *   **Background:** Dark cosmic environment with soft nebula-like clouds. Light particles drift in 3D space.
 *   **Camera:** 3D orbit slowly circling lattice as nodes form. Push-in shots to emphasize formation of first agents.
-*   **Lighting:** Nodes glow gradually; pulsing light lines connect nodes organically.
-*   **Particles:** Spark trails when droplets hit lattice; small halos around newly forming nodes.
-*   **Effect:** Each node forms with a soft “pop” or “chime” sound to signify creation.
 *   **Mood:** Sense of intelligence emerging; awe + wonder.
 
 #### Scene 2 — Vultr Ignition (Global Body)
 *   **Background:** Semi-transparent Earth globe floating in cosmic void. Aurora-like cloud currents orbit the planet to indicate energy flow.
 *   **Camera:** Slow pan from poles → equator; occasional top-down zoom into nodes on continents.
-*   **Lighting:** Pulsing lines connect Raindrop lattice to globe; node glow intensity shows compute load.
-*   **Particles:** Electric arcs travel along global connections; subtle sparks where nodes link.
-*   **Effect:** Light ripples travel from nodes → globe → lattice to visually show compute distribution.
 *   **Mood:** Scale, expansion, power; user feels global presence.
 
 #### Scene 3 — ElevenLabs Heartbeat (Emotion & Voice)
 *   **Background:** Central volumetric waveform floating above lattice; mist diffuses light pulses across the scene.
 *   **Camera:** Push-in to waveform peaks, slow orbit around waveform; occasional POV shot from inside waveform pulsing with sound.
-*   **Lighting:** Color-coded waves: blue = calm, red = intense, purple = mixed emotion. Light reflects softly onto nodes and globe.
-*   **Particles:** Small motes of light flow along waveform curves; wave syncs with breathing hum + voice.
-*   **Effect:** Emotion sliders or interaction change waveform dynamically; waveform height, color, and speed react to user.
 *   **Mood:** Presence, identity, soulfulness; user feels emotional connection.
 
 #### Scene 4 — Gemini Illumination (Reasoning & Prediction)
 *   **Background:** Transparent 3D grid, floating branching timelines, semi-dark cosmic backdrop to maintain focus.
 *   **Camera:** Slow dolly along timeline branches; dynamic rotation around multi-layered simulation grids.
-*   **Lighting:** Soft holographic glow on grid lines; active reasoning paths pulse bright cyan.
-*   **Particles:** Tiny floating geometric shapes trace cause-effect links; shimmer indicates active computation.
-*   **Effect:** Pre-scripted queries or interactions make branches illuminate progressively; “prediction light” flows from Raindrop nodes to Gemini grid.
 *   **Mood:** Intelligence, discovery, insight; cinematic “aha” feeling.
 
 #### Scene 5 — Cerebras Neural Fabric (Parallel Thinking)
 *   **Background:** Expansive neural mesh floating in cosmic void; stars and nebulae faintly visible.
 *   **Camera:** Dramatic fly-through inside neural clusters; occasional wide-angle to show scale.
-*   **Lighting:** Sparks fire along strands; active clusters glow; pulsating ambient light.
-*   **Particles:** Neural sparks travel along threads; small particle bursts where clusters fire synchronously.
-*   **Effect:** Zoom and pan reveal emergent agent behavior; clusters connect visually with Raindrop lattice and Vultr globe.
 *   **Mood:** Complexity, scale, omniscience; user feels “mind at universe scale.”
 
 ... and so on, for the full cinematic journey. The goal is to make the user feel VultraDrop as a living, sentient system.
@@ -274,7 +265,7 @@ This is the feature-film director’s blueprint for the VultraDrop experience. I
 
 ## 🚀 The "Live Proof": In-App Capabilities Vision
 <details>
-<summary><strong>🤯 CLICK TO REVEAL: The Ultimate In-App Demonstration Blueprint</strong></summary>
+<summary><strong>🤯 CLICK TO WITNESS: The Ultimate In-App Demonstration Blueprint...</strong></summary>
 <br/>
 
 This is the vision for a fully interactive demo workflow for VultraDrop that is mind-blowing, experiential, and self-revealing.
@@ -310,7 +301,7 @@ This is the vision for a fully interactive demo workflow for VultraDrop that is 
 
 ## 🎙️ The Genesis Story: An Audio Drama
 <details>
-<summary><strong>🎧 CLICK TO REVEAL: Podcast Episode — “VultraDrop: When Cloud, AI, and Consciousness Collide”</strong></summary>
+<summary><strong>🎧 CLICK TO HEAR: Podcast Episode — “VultraDrop: When Cloud, AI, and Consciousness Collide”...</strong></summary>
 <br/>
 
 **Episode Title:** “VultraDrop: When Cloud, AI, and Consciousness Collide”
@@ -349,7 +340,7 @@ This is the vision for a fully interactive demo workflow for VultraDrop that is 
 ## 🎮 Your Interface: What Can You Do in the Portal?
 
 <p align="center">
-  <img src="https://storage.googleapis.com/aai-web-template-files/vultradrop-hyperverse-banner.png" alt="Creative Hyperverse Banner" width="800"/>
+  <img src="https://i.imgur.com/eB30c3E.png" alt="Creative Hyperverse Banner" width="800"/>
 </p>
 
 This portal is your **Manifestation Sanctum**. It is where you become a co-creator.
@@ -418,10 +409,10 @@ VultraDrop is built upon four conceptual pillars, each powered by a real-world t
 
 ### ASCII Blueprints 🎨
 <details>
-<summary><strong>CLICK TO EXPAND</strong></summary>
+<summary><strong>CLICK TO REVEAL: The "Hacker Deck" Schematics... 🖥️</strong></summary>
 <br/>
 
-Here are the retro-futuristic, "hacker-deck" blueprints for the VultraDrop lifeform.
+Here are the retro-futuristic blueprints for the VultraDrop lifeform.
 
 #### 🧬 The VultraDrop Organism: A Conceptual Anatomy
 
@@ -494,7 +485,7 @@ This blueprint shows the entire technology stack, from the physical hardware tha
 
 ## 🔬 The Code Alchemist's Grimoire: How It All Works
 <details>
-<summary><strong>💻 CLICK TO REVEAL: The Code Architecture</strong></summary>
+<summary><strong>💻 CLICK TO REVEAL: The Code Architecture...</strong></summary>
 <br/>
 
 VultraDrop isn't magic; it's a carefully orchestrated symphony of modern web technologies designed to create an illusion of life.
