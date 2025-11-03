@@ -5,7 +5,7 @@ import ShowcaseGallery from './ShowcaseGallery';
 import { ThemeSwitcher } from './ThemeSwitcher';
 import GenesisDemo from './GenesisDemo';
 import { RaindropLogo, VultrLogo, ElevenLabsLogo, GeminiCerebrasLogo, VultraDropLogo } from './LogoComponents';
-import { FilmIcon, PhotoIcon } from './IconComponents';
+import { FilmIcon, PhotoIcon, ArrowLeftIcon, ArrowRightIcon } from './IconComponents';
 import { RaindropVisualization, VultrVisualization, ElevenLabsVisualization, GeminiCerebrasVisualization } from './visualizations';
 
 type LayerId = 'genesis' | 'raindrop' | 'vultr' | 'elevenlabs' | 'cerebras_gemini' | 'hyperverse' | 'showcase';
@@ -50,11 +50,32 @@ const InfoOverlay: React.FC<{ layer: Layer, isVisible: boolean }> = ({ layer, is
 };
 
 const HUD: React.FC<{ activeLayer: LayerId, setActiveLayer: (layer: LayerId) => void }> = ({ activeLayer, setActiveLayer }) => {
+    const layerIds: LayerId[] = ['raindrop', 'vultr', 'elevenlabs', 'cerebras_gemini'];
+    const currentIndex = layerIds.indexOf(activeLayer as LayerId);
+
+    const goPrev = () => {
+        const idx = currentIndex === -1 ? 0 : (currentIndex - 1 + layerIds.length) % layerIds.length;
+        setActiveLayer(layerIds[idx]);
+    };
+    const goNext = () => {
+        const idx = currentIndex === -1 ? 0 : (currentIndex + 1) % layerIds.length;
+        setActiveLayer(layerIds[idx]);
+    };
+
     return (
         <div className="hud-container animate-fade-in">
+            <button
+                onClick={goPrev}
+                className="hud-button"
+                title="Previous"
+                aria-label="Previous layer"
+            >
+                <ArrowLeftIcon className="w-8 h-8" />
+            </button>
+
             {layers.map(layer => (
                 layer.id !== 'genesis' && (
-                    <button 
+                    <button
                         key={layer.id}
                         onClick={() => setActiveLayer(layer.id)}
                         className={`hud-button ${activeLayer === layer.id ? 'active' : ''}`}
@@ -80,6 +101,15 @@ const HUD: React.FC<{ activeLayer: LayerId, setActiveLayer: (layer: LayerId) => 
                 aria-label="Open Creative Hyperverse"
             >
                 <FilmIcon className="w-8 h-8" />
+            </button>
+
+            <button
+                onClick={goNext}
+                className="hud-button"
+                title="Next"
+                aria-label="Next layer"
+            >
+                <ArrowRightIcon className="w-8 h-8" />
             </button>
         </div>
     );
