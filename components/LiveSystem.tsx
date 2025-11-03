@@ -55,6 +55,7 @@ const LiveSystem: React.FC = () => {
         );
       case 'live':
         return <CreativeHyperverse />;
+      // FIX: Corrected typo from 'rainddrop' to 'raindrop' to match the View type.
       case 'raindrop':
       case 'vultr':
       case 'elevenlabs':
@@ -70,7 +71,7 @@ const LiveSystem: React.FC = () => {
           </LayerDetailView>
         );
       default:
-        return <div>Invalid View</div>
+        return <AnatomyView onSelectLayer={(layer) => setCurrentView(layer)} onGoLive={() => setCurrentView('live')} />;
     }
   };
 

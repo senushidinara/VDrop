@@ -8,11 +8,18 @@ const App: React.FC = () => {
   // For development, you can skip the demo by setting this to true
   // useState(true);
 
-  if (!demoCompleted) {
-    return <GenesisDemo onComplete={() => setDemoCompleted(true)} />;
-  }
-
-  return <LiveSystem />;
+  return (
+    <>
+      {!demoCompleted && (
+        <GenesisDemo 
+          onComplete={() => setDemoCompleted(true)} 
+        />
+      )}
+      <div className={`transition-opacity duration-1000 ${demoCompleted ? 'opacity-100' : 'opacity-0'}`}>
+        {demoCompleted && <LiveSystem />}
+      </div>
+    </>
+  );
 };
 
 export default App;
