@@ -10,5 +10,14 @@ export interface Clip {
   id: number;
   urls: string[] | null;
   status: ClipStatus;
-  audioUrl: string | null;
+  scriptText: string; // The specific line of script for this scene
+}
+
+// Represents the entire creative output from a single vision
+export interface Manifestation {
+    vision: string;
+    fullScript: string;
+    narrationUrl: string | null;
+    musicUrl: string | null;
+    clips: Clip[];
 }

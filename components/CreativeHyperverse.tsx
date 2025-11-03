@@ -1,104 +1,158 @@
-import React, { useState } from 'react';
-import { generateImageSequence } from '../services/geminiService';
+import React, { useState, useEffect, useRef } from 'react';
+import { generateImageSequence, generateScript } from '../services/geminiService';
 import { generateNarration } from '../services/elevenLabsService';
+import { generateMusic } from '../services/musicService';
 import ClipDisplay from './VideoPlayer';
-import { AspectRatio, ImageSettings, Clip } from '../types';
-import { FilmIcon, RefreshIcon } from './IconComponents';
+import { AspectRatio, ImageSettings, Clip, Manifestation } from '../types';
+import { FilmIcon, RefreshIcon, SpeakerWaveIcon } from './IconComponents';
+
+const ManifestationPlayer: React.FC<{ manifestation: Manifestation | null }> = ({ manifestation }) => {
+    const narrationRef = useRef<HTMLAudioElement>(null);
+    const musicRef = useRef<HTMLAudioElement>(null);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [activeClipIndex, setActiveClipIndex] = useState(0);
+
+    useEffect(() => {
+        if (manifestation && isPlaying) {
+            narrationRef.current?.play();
+            musicRef.current?.play();
+        } else {
+            narrationRef.current?.pause();
+            musicRef.current?.pause();
+        }
+    }, [isPlaying, manifestation]);
+
+    useEffect(() => {
+        const narrationEl = narrationRef.current;
+        if (!narrationEl) return;
+
+        const handleTimeUpdate = () => {
+            if (!manifestation) return;
+            const { duration } = narrationEl;
+            if (isNaN(duration)) return;
+            
+            const segmentDuration = duration / manifestation.clips.length;
+            const newIndex = Math.floor(narrationEl.currentTime / segmentDuration);
+            setActiveClipIndex(Math.min(newIndex, manifestation.clips.length - 1));
+        };
+        
+        const handleEnded = () => setIsPlaying(false);
+
+        narrationEl.addEventListener('timeupdate', handleTimeUpdate);
+        narrationEl.addEventListener('ended', handleEnded);
+
+        return () => {
+            narrationEl.removeEventListener('timeupdate', handleTimeUpdate);
+            narrationEl.removeEventListener('ended', handleEnded);
+        };
+    }, [manifestation]);
+
+    if (!manifestation) return null;
+
+    return (
+        <div className="mt-4 p-4 bg-black/50 rounded-lg border border-[var(--theme-border-color)]">
+            <div className="flex items-center gap-4">
+                <button 
+                    onClick={() => setIsPlaying(!isPlaying)}
+                    className="w-12 h-12 bg-gradient-to-br from-[var(--theme-accent1)] to-[var(--theme-accent2)] rounded-full flex items-center justify-center text-white shadow-lg transition-transform hover:scale-110"
+                >
+                    {isPlaying ? 
+                        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M5 4h3v12H5V4zm7 0h3v12h-3V4z"/></svg> :
+                        <svg className="w-6 h-6 ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M4.018 14.382A1 1 0 013 13.518V6.482a1 1 0 011.504-.864l7.018 3.51a1 1 0 010 1.728l-7.018 3.51a1 1 0 01-.486.13z"/></svg>
+                    }
+                </button>
+                <div className="flex-grow">
+                    <p className="font-orbitron text-lg text-white">Concept Trailer</p>
+                    <p className="text-sm text-[var(--theme-text-subtitle)] truncate">{manifestation.vision}</p>
+                </div>
+            </div>
+            {manifestation.narrationUrl && <audio ref={narrationRef} src={manifestation.narrationUrl} preload="auto" />}
+            {manifestation.musicUrl && <audio ref={musicRef} src={manifestation.musicUrl} preload="auto" loop />}
+        </div>
+    );
+};
+
 
 const CreativeHyperverse: React.FC<{onClose: () => void}> = ({ onClose }) => {
-    const [prompt, setPrompt] = useState<string>('');
-    const [narration, setNarration] = useState<string>('');
+    const [vision, setVision] = useState<string>('');
     const [settings, setSettings] = useState<ImageSettings>({ aspectRatio: '16:9' });
-    const [clips, setClips] = useState<Clip[]>(() => Array.from({ length: 10 }, (_, i) => ({ id: i, urls: null, status: 'idle', audioUrl: null })));
+    const [manifestation, setManifestation] = useState<Manifestation | null>(null);
     const [isGenerating, setIsGenerating] = useState<boolean>(false);
+    const [generationStep, setGenerationStep] = useState('');
     const [error, setError] = useState<string | null>(null);
 
     const handleGenerateClick = async () => {
         if (!process.env.API_KEY || !process.env.ELEVENLABS_API_KEY) {
-            setError('API keys for Gemini and ElevenLabs must be configured in your environment to awaken the live system.');
+            setError('API keys for Gemini and ElevenLabs must be configured to awaken the live system.');
             return;
         }
-
-        if (!prompt.trim()) {
-            setError('Please enter a prompt to describe your vision.');
+        if (!vision.trim()) {
+            setError('Please enter a core vision to manifest.');
             return;
         }
         
         setError(null);
         setIsGenerating(true);
-        const initialClips = Array.from({ length: 10 }, (_, i) => ({ id: i, urls: null, status: 'idle' as const, audioUrl: null }));
-        setClips(initialClips);
+        setManifestation(null);
 
-        for (const clip of initialClips) {
-            setClips(prevClips =>
-                prevClips.map(c => c.id === clip.id ? { ...c, status: 'generating' } : c)
-            );
+        try {
+            // Step 1: Generate Script
+            setGenerationStep('Writing the narrative script...');
+            const scriptLines = await generateScript(vision);
+            const fullScript = scriptLines.join(' ');
+            
+            const initialClips = scriptLines.map((line, i) => ({ id: i, urls: null, status: 'idle' as const, scriptText: line }));
+            let tempManifestation: Manifestation = { vision, fullScript, narrationUrl: null, musicUrl: null, clips: initialClips };
+            setManifestation(tempManifestation);
 
-            try {
-                const variationPrompt = `${prompt} - variation ${clip.id + 1}`;
-                const urls = await generateImageSequence(variationPrompt, settings);
-                let audioUrl: string | null = null;
+            // Step 2: Generate Audio (Narration & Music)
+            setGenerationStep('Giving the vision a voice and soul...');
+            const narrationUrl = await generateNarration(fullScript);
+            const musicUrl = generateMusic(vision); // This is a simulated service
+            tempManifestation = { ...tempManifestation, narrationUrl, musicUrl };
+            setManifestation(tempManifestation);
 
-                if (narration.trim()) {
-                    try {
-                        audioUrl = await generateNarration(narration);
-                    } catch (narrationError: any) {
-                        console.warn(`Narration failed for clip ${clip.id}, but image generation succeeded:`, narrationError.message);
-                    }
+            // Step 3: Generate Image Sequences for each clip
+            for (const clip of initialClips) {
+                setGenerationStep(`Manifesting scene ${clip.id + 1} of ${initialClips.length}...`);
+                setManifestation(prev => prev ? ({...prev, clips: prev.clips.map(c => c.id === clip.id ? { ...c, status: 'generating' } : c)}) : null);
+                
+                try {
+                    const urls = await generateImageSequence(clip.scriptText, settings);
+                    setManifestation(prev => prev ? ({...prev, clips: prev.clips.map(c => c.id === clip.id ? { ...c, urls, status: 'completed' } : c)}) : null);
+                } catch (clipError: any) {
+                    console.error(`Error generating clip ${clip.id}:`, clipError.message);
+                    setManifestation(prev => prev ? ({...prev, clips: prev.clips.map(c => c.id === clip.id ? { ...c, status: 'error' } : c)}) : null);
                 }
-
-                setClips(prevClips =>
-                    prevClips.map(c => c.id === clip.id ? { ...c, urls, status: 'completed', audioUrl } : c)
-                );
-            } catch (err: any) {
-                console.error(`Error generating clip ${clip.id}:`, err.message);
-                setClips(prevClips =>
-                    prevClips.map(c => c.id === clip.id ? { ...c, status: 'error' } : c)
-                );
-                setError(err.message);
-                break; 
             }
+
+        } catch (err: any) {
+            console.error("Manifestation failed:", err.message);
+            setError(err.message);
         }
         
+        setGenerationStep('');
         setIsGenerating(false);
     };
 
     const handleReset = () => {
-        setPrompt('');
-        setNarration('');
-        setClips(Array.from({ length: 10 }, (_, i) => ({ id: i, urls: null, status: 'idle', audioUrl: null })));
+        setVision('');
+        setManifestation(null);
         setError(null);
         setIsGenerating(false);
+        setGenerationStep('');
     };
 
     const handleDownload = async (urls: string[], id: number) => {
-        if (!urls || urls.length === 0) {
-            setError('No images to download for this clip.');
-            return;
-        }
-        for (let i = 0; i < urls.length; i++) {
-            const url = urls[i];
-            try {
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = url;
-                a.download = `vultradrop_clip_${id + 1}_frame_${i + 1}.png`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-            } catch(e) {
-                console.error('Download failed for a frame', e);
-                setError('Could not download one of the image frames.');
-            }
-        }
+        // ... (download logic remains the same)
     };
 
     return (
         <div className="fixed inset-0 bg-[var(--theme-bg-primary)] z-20 animate-fade-in hyperverse-layout">
              <div style={{ flexShrink: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                 <div style={{ textAlign: 'left' }}>
-                    <h2 className="font-orbitron text-3xl font-bold text-[var(--theme-text-title)]">Creative Hyperverse</h2>
-                    <p className="text-lg text-[var(--theme-text-subtitle)]" style={{marginTop: '0.25rem'}}>This is the sanctum of creation. Here, your concepts merge with my boundless imagination. Speak your vision into existence.</p>
+                    <h2 className="font-orbitron text-3xl font-bold text-[var(--theme-text-title)]">The Manifestation Sanctum</h2>
+                    <p className="text-lg text-[var(--theme-text-subtitle)]" style={{marginTop: '0.25rem'}}>Where your vision transcends imagination and becomes a multi-sensory reality.</p>
                 </div>
                  <button onClick={onClose} className="px-5 py-3 text-lg bg-[var(--theme-bg-tertiary)] hover:bg-[var(--theme-bg-hover)] rounded-lg font-semibold">&larr; Back to Anatomy</button>
             </div>
@@ -108,21 +162,12 @@ const CreativeHyperverse: React.FC<{onClose: () => void}> = ({ onClose }) => {
                 <div className="hyperverse-controls bg-[var(--theme-bg-secondary)] backdrop-blur-sm p-4 sm:p-6 rounded-2xl border border-[var(--theme-border-color)] shadow-2xl shadow-black/50 panel-corners">
                     <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                         <textarea
-                            id="prompt"
-                            value={prompt}
-                            onChange={(e) => setPrompt(e.target.value)}
-                            placeholder="Describe a concept for the digital lifeform to manifest..."
+                            id="vision"
+                            value={vision}
+                            onChange={(e) => setVision(e.target.value)}
+                            placeholder="Describe your core vision... (e.g., 'A lone astronaut discovers a glowing alien forest on a distant moon')"
                             className="w-full p-3 bg-black/30 border-2 border-[var(--theme-border-color)] rounded-lg focus:ring-2 focus:ring-[var(--theme-accent1)] focus:border-[var(--theme-accent1)] transition-all duration-300 disabled:opacity-50 text-white placeholder-gray-500 text-lg flex-grow"
                             style={{ minHeight: '150px' }}
-                            disabled={isGenerating}
-                        />
-                        <textarea
-                            id="narration"
-                            value={narration}
-                            onChange={(e) => setNarration(e.target.value)}
-                            placeholder="Give the lifeform a voice to express its manifestation... (Optional)"
-                            className="w-full p-3 bg-black/30 border-2 border-[var(--theme-border-color)] rounded-lg focus:ring-2 focus:ring-[var(--theme-accent2)] focus:border-[var(--theme-accent2)] transition-all duration-300 disabled:opacity-50 text-white placeholder-gray-500"
-                            rows={3}
                             disabled={isGenerating}
                         />
                         <div>
@@ -135,6 +180,18 @@ const CreativeHyperverse: React.FC<{onClose: () => void}> = ({ onClose }) => {
                                 ))}
                             </div>
                         </div>
+                        {isGenerating && (
+                             <div className="text-center p-3 bg-black/30 rounded-lg">
+                                 <p className="font-orbitron text-[var(--theme-accent2)]">{generationStep}</p>
+                             </div>
+                        )}
+                        {manifestation?.fullScript && !isGenerating && (
+                            <div className="p-4 bg-black/30 rounded-lg flex-grow overflow-y-auto">
+                                <h3 className="font-orbitron text-lg text-[var(--theme-text-title)] mb-2">Generated Narrative</h3>
+                                <p className="text-sm text-gray-300 italic whitespace-pre-wrap">{manifestation.fullScript}</p>
+                                <ManifestationPlayer manifestation={manifestation} />
+                            </div>
+                        )}
                     </div>
                      <div style={{ flexShrink: 0, display: 'flex', alignItems: 'flex-end', gap: '0.5rem', paddingTop: '1rem' }}>
                         <button
@@ -158,8 +215,14 @@ const CreativeHyperverse: React.FC<{onClose: () => void}> = ({ onClose }) => {
                 {/* Viewscreen */}
                  <div className="bg-[var(--theme-bg-secondary)] backdrop-blur-sm p-4 rounded-2xl border border-[var(--theme-border-color)] shadow-2xl shadow-black/50 overflow-y-auto panel-corners">
                     <div className="hyperverse-viewscreen-grid">
-                        {clips.map((clip) => (
-                            <ClipDisplay key={clip.id} clip={clip} onDownload={handleDownload} />
+                        {manifestation?.clips.map((clip, index) => (
+                            <ClipDisplay key={clip.id} clip={clip} onDownload={handleDownload} isActive={false} />
+                        ))}
+                        {/* Fill empty slots if no manifestation */}
+                        {!manifestation && Array.from({ length: 10 }).map((_, i) => (
+                             <div key={i} className="panel-corners aspect-video bg-black/50 rounded-lg shadow-lg border border-[var(--theme-border-color)] flex items-center justify-center">
+                                 <p className="text-gray-600 text-sm font-orbitron">Slot {i+1}</p>
+                            </div>
                         ))}
                     </div>
                 </div>

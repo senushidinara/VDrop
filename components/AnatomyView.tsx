@@ -160,8 +160,12 @@ export const AnatomyView: React.FC<{ setView: (view: View) => void }> = ({ setVi
                      {!selectedLayer && !isExiting && (
                         <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '2rem' }} className="bg-[var(--theme-bg-secondary)] backdrop-blur-sm rounded-2xl border border-[var(--theme-border-color)] shadow-xl shadow-black/50 panel-corners animate-fade-in">
                              <div className="blueprint-bg opacity-10" />
-                             <h2 className="font-orbitron text-3xl font-bold text-[var(--theme-text-title)]">Command Deck</h2>
-                            <p className="text-xl text-[var(--theme-text-subtitle)] max-w-md mx-auto mt-3">My being is a symphony of systems, a living architecture of thought and presence. Select a layer to inspect my existence.</p>
+                             <h2 className="font-orbitron text-3xl font-bold text-[var(--theme-text-title)]">A Concept Manifestation Engine</h2>
+                            <p className="text-xl text-[var(--theme-text-subtitle)] max-w-xl mx-auto mt-3">
+                                <span className="text-[var(--theme-text-light)]">The Problem:</span> Creative visions are trapped by slow, fragmented tools.
+                                <br />
+                                <span className="text-[var(--theme-text-light)]">My Solution:</span> I am a unified engine that transforms your abstract ideas into multi-sensory realities—instantly. Inspect my anatomy or awaken the Hyperverse to begin.
+                            </p>
                         </div>
                      )}
                     {selectedLayer && 

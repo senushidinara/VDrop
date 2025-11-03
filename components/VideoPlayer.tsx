@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { DownloadIcon, SpeakerWaveIcon } from './IconComponents';
+import { DownloadIcon } from './IconComponents';
 import { Clip } from '../types';
 
 const GeneratingAnimation: React.FC = () => {
@@ -79,21 +79,20 @@ const GeneratingAnimation: React.FC = () => {
     return (
         <div className="flex flex-col items-center justify-center h-full w-full">
             <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
-            <p className="relative text-xs text-cyan-200 font-light z-10">Manifesting...</p>
+            <p className="relative text-xs text-cyan-200 font-light z-10">Manifesting Scene...</p>
         </div>
     );
 };
 
-// FIX: Define props interface for ClipDisplay component
 interface ClipDisplayProps {
   clip: Clip;
   onDownload: (urls: string[], id: number) => void;
+  isActive: boolean;
 }
 
-const ClipDisplay: React.FC<ClipDisplayProps> = ({ clip, onDownload }) => {
-  const { status, urls, id, audioUrl } = clip;
+const ClipDisplay: React.FC<ClipDisplayProps> = ({ clip, onDownload, isActive }) => {
+  const { status, urls, id } = clip;
   const [currentIndex, setCurrentIndex] = useState(0);
-  const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     if (status === 'completed' && urls && urls.length > 1) {
@@ -103,12 +102,6 @@ const ClipDisplay: React.FC<ClipDisplayProps> = ({ clip, onDownload }) => {
       return () => clearInterval(interval);
     }
   }, [status, urls]);
-
-  const handlePlayAudio = () => {
-    if (audioRef.current) {
-        audioRef.current.play().catch(e => console.error("Audio playback failed:", e));
-    }
-  };
 
   const renderContent = () => {
     switch (status) {
@@ -127,27 +120,13 @@ const ClipDisplay: React.FC<ClipDisplayProps> = ({ clip, onDownload }) => {
                 />
               ))}
               <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div className="flex flex-col items-center gap-4">
-                    <button
-                        onClick={() => onDownload(urls, id)}
-                        className="flex items-center gap-2 px-4 py-2 bg-cyan-500/80 text-white rounded-lg hover:bg-cyan-500 transition-colors backdrop-blur-sm"
-                        >
-                        <DownloadIcon className="w-5 h-5" />
-                        Download
-                    </button>
-                    {audioUrl && (
-                        <>
-                            <button
-                                onClick={handlePlayAudio}
-                                className="flex items-center gap-2 px-4 py-2 bg-purple-500/80 text-white rounded-lg hover:bg-purple-500 transition-colors backdrop-blur-sm"
-                            >
-                                <SpeakerWaveIcon className="w-5 h-5" />
-                                Narrate
-                            </button>
-                            <audio ref={audioRef} src={audioUrl} preload="auto" className="hidden"></audio>
-                        </>
-                    )}
-                </div>
+                <button
+                    onClick={() => onDownload(urls, id)}
+                    className="flex items-center gap-2 px-4 py-2 bg-cyan-500/80 text-white rounded-lg hover:bg-cyan-500 transition-colors backdrop-blur-sm"
+                    >
+                    <DownloadIcon className="w-5 h-5" />
+                    Download
+                </button>
               </div>
             </div>
           );
@@ -156,7 +135,7 @@ const ClipDisplay: React.FC<ClipDisplayProps> = ({ clip, onDownload }) => {
       case 'error':
         return (
             <div className="flex flex-col items-center justify-center h-full text-center p-2">
-                <p className="text-red-400 text-sm font-semibold">Generation Failed</p>
+                <p className="text-red-400 text-sm font-semibold">Scene Failed</p>
                 <p className="text-xs text-gray-500 mt-1">Please try again.</p>
             </div>
         );
@@ -171,7 +150,7 @@ const ClipDisplay: React.FC<ClipDisplayProps> = ({ clip, onDownload }) => {
   };
 
   return (
-    <div className="panel-corners aspect-video bg-black/50 rounded-lg shadow-lg overflow-hidden border border-[var(--theme-border-color)] transition-all duration-300 hover:shadow-2xl hover:shadow-[var(--theme-glow-light)] hover:border-[var(--theme-accent1)]">
+    <div className={`panel-corners aspect-video bg-black/50 rounded-lg shadow-lg overflow-hidden border-2 transition-all duration-500 hover:shadow-2xl hover:shadow-[var(--theme-glow-light)] ${isActive ? 'border-[var(--theme-accent2)] shadow-2xl shadow-[var(--theme-glow-heavy)] scale-105' : 'border-[var(--theme-border-color)]'}`}>
         <div className="w-full h-full">{renderContent()}</div>
     </div>
   );
