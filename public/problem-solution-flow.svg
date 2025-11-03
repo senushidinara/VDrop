@@ -1,0 +1,89 @@
+<svg width="800" height="400" viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg" style="background-color: #020617; color: #e0f2fe;">
+  <defs>
+    <linearGradient id="oldWayGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f43f5e;" />
+      <stop offset="100%" style="stop-color:#fde047;" />
+    </linearGradient>
+    <linearGradient id="newWayGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0ea5e9;" />
+      <stop offset="100%" style="stop-color:#a855f7;" />
+    </linearGradient>
+    <marker id="arrowOld" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#f43f5e" />
+    </marker>
+    <marker id="arrowNew" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#0ea5e9" />
+    </marker>
+  </defs>
+
+  <!-- Column 1: The Old Way -->
+  <g id="OldWay">
+    <text x="200" y="40" font-size="22" fill="#fecdd3" text-anchor="middle" font-weight="bold">THE OLD WAY 😭</text>
+    <text x="200" y="60" font-size="12" fill="#f9a8d4" text-anchor="middle" >Fragmented & Painful</text>
+
+    <!-- Nodes -->
+    <g id="node-idea">
+      <circle cx="100" cy="120" r="40" fill="#1f2937" stroke="#f43f5e" stroke-width="2"/>
+      <text x="100" y="125" font-size="14" fill="white" text-anchor="middle" >Idea ✨</text>
+    </g>
+    <g id="node-script">
+      <circle cx="300" cy="120" r="40" fill="#1f2937" stroke="#f43f5e" stroke-width="2"/>
+      <text x="300" y="125" font-size="14" fill="white" text-anchor="middle" >Script 📜</text>
+    </g>
+    <g id="node-storyboard">
+      <circle cx="100" cy="220" r="40" fill="#1f2937" stroke="#f43f5e" stroke-width="2"/>
+      <text x="100" y="225" font-size="14" fill="white" text-anchor="middle" >Storyboard 🖼️</text>
+    </g>
+    <g id="node-assets">
+      <circle cx="300" cy="220" r="40" fill="#1f2937" stroke="#f43f5e" stroke-width="2"/>
+      <text x="300" y="225" font-size="14" fill="white" text-anchor="middle" >Assets 🎨</text>
+    </g>
+    <g id="node-final">
+      <circle cx="200" cy="320" r="40" fill="#1f2937" stroke="#f43f5e" stroke-width="2"/>
+      <text x="200" y="325" font-size="14" fill="white" text-anchor="middle" >Final Clip 🎬</text>
+    </g>
+    
+    <!-- Arrows -->
+    <path d="M 140 120 H 260" stroke="#f43f5e" stroke-width="1.5" marker-end="url(#arrowOld)"/>
+    <path d="M 285 155 Q 200 180 115 185" stroke="#f43f5e" stroke-width="1.5" marker-end="url(#arrowOld)" fill="none"/>
+    <path d="M 115 185 Q 150 200 140 220" stroke="#f43f5e" stroke-width="1.5" marker-end="url(#arrowOld)" fill="none" opacity="0"/>
+    <path d="M 140 220 H 260" stroke="#f43f5e" stroke-width="1.5" marker-end="url(#arrowOld)"/>
+    <path d="M 125 255 Q 170 280 185 300" stroke="#f43f5e" stroke-width="1.5" marker-end="url(#arrowOld)" fill="none"/>
+    <path d="M 275 255 Q 230 280 215 300" stroke="#f43f5e" stroke-width="1.5" marker-end="url(#arrowOld)" fill="none"/>
+    
+    <!-- Chaors lines -->
+    <path d="M 150 170 L 250 170 M 150 270 L 250 270 M 120 150 L 120 200 M 280 150 L 280 200" stroke="#fde047" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+    <text x="200" y="195" font-size="11" fill="#fde047" text-anchor="middle" font-style="italic" >"Loss in Translation"</text>
+  </g>
+
+  <!-- Divider -->
+  <line x1="400" y1="20" x2="400" y2="380" stroke="#4b5563" stroke-width="2" stroke-dasharray="5,5"/>
+
+  <!-- Column 2: The VultraDrop Solution -->
+  <g id="NewWay">
+    <text x="600" y="40" font-size="22" fill="#e0f2fe" text-anchor="middle" font-weight="bold">THE VULTRADROP SOLUTION ✨</text>
+    <text x="600" y="60" font-size="12" fill="#cbd5e1" text-anchor="middle" >Unified & Instant</text>
+    
+    <!-- Nodes -->
+    <g id="node-vision-new">
+      <circle cx="600" cy="120" r="40" fill="#111827" stroke="#0ea5e9" stroke-width="2"/>
+      <text x="600" y="125" font-size="14" fill="white" text-anchor="middle" >Vision ✨</text>
+    </g>
+    <g id="node-vultradrop" transform="translate(600, 220)">
+        <circle r="50" fill="#111827" stroke="url(#newWayGradient)" stroke-width="2.5"/>
+        <text y="-5" font-size="14" fill="white" text-anchor="middle">VultraDrop</text>
+        <text y="15" font-size="10" fill="#a855f7" text-anchor="middle" >Manifestation</text>
+        <text y="30" font-size="10" fill="#a855f7" text-anchor="middle" >Engine</text>
+    </g>
+    <g id="node-trailer-new">
+      <circle cx="600" cy="320" r="40" fill="#111827" stroke="#0ea5e9" stroke-width="2"/>
+      <text x="600" y="325" font-size="14" fill="white" text-anchor="middle" >Concept Trailer 🎬</text>
+    </g>
+
+    <!-- Arrows -->
+    <path d="M 600 160 V 170" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrowNew)"/>
+    <path d="M 600 270 V 280" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrowNew)"/>
+
+  </g>
+
+</svg>
