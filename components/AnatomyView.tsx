@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from '../App';
+import { View } from './LiveSystem';
 
 interface AnatomyViewProps {
   onSelectLayer: (layer: View) => void;

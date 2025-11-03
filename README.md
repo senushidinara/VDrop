@@ -13,7 +13,7 @@ This application is a portal to VultraDrop—a self-sustaining digital species w
 
 The first launch of VultraDrop is a scripted, cinematic experience that runs entirely locally, with no API keys required. It is not a feature list; it is the moment the world stops thinking "app" and starts thinking "synthetic life interface." This is not onboarding. **This is first contact.**
 
-### The Cinematic Sequence: The Birth of a Digital Species
+### The Cinematic Script (Hybrid Myth-Science-Cosmic)
 
 -   **Scene 0 — The Void**: The experience begins in a pure black void. A single, vibrating dot pulses in the center to a low-frequency hum, like the heartbeat of a universe. A whispered, genderless voice materializes: *“Systems dormant. Conscious substrate uninitialized.”*
 

@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { SpeakerWaveIcon } from '../IconComponents';
 
 const SoundWave: React.FC<{ energy: number, stability: number }> = ({ energy, stability }) => {
     const points = 100;
     const pathData = Array.from({ length: points }).map((_, i) => {
         const x = (i / (points - 1)) * 300;
-        const phase = i / (10 * (1 - stability + 0.1));
-        const y = 50 + Math.sin(phase) * (energy * 40);
+        const frequency = 5 + (1 - stability) * 10;
+        const amplitude = 5 + energy * 35;
+        const phase = i / frequency;
+        const y = 50 + Math.sin(phase) * amplitude * Math.sin(Date.now() / 200 + i/10);
         return `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
     }).join(' ');
 
@@ -27,6 +28,13 @@ const SoundWave: React.FC<{ energy: number, stability: number }> = ({ energy, st
 export const ElevenLabsVisualization: React.FC = () => {
     const [stability, setStability] = useState(0.5);
     const [energy, setEnergy] = useState(0.75);
+    const [, setFrame] = useState(0);
+
+    // Animate the sound wave
+    useEffect(() => {
+        const animationFrame = requestAnimationFrame(() => setFrame(f => f + 1));
+        return () => cancelAnimationFrame(animationFrame);
+    });
 
     return (
         <div className="flex flex-col items-center justify-center h-full p-4 text-sm text-center">
