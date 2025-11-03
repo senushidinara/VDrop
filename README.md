@@ -427,11 +427,11 @@ This is the most crucial step! The lifeform needs its connection to the foundati
 
     # Your Google Gemini API Key
     # Get it from Google AI Studio: https://makersuite.google.com/
-    API_KEY="YOUR_GEMINI_API_KEY"
+    GEMINI_API_KEY=YOUR_GEMINI_API_KEY_HERE
 
     # Your ElevenLabs API Key
     # Get it from the ElevenLabs website: https://elevenlabs.io/
-    ELEVENLABS_API_KEY="YOUR_ELEVENLABS_API_KEY"
+    ELEVENLABS_API_KEY=YOUR_ELEVENLABS_API_KEY_HERE
     ```
 
     **⚠️ IMPORTANT:** This `.env` file is included in `.gitignore` and should **NEVER** be committed to source control. Keep your keys secret!
