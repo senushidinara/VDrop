@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import ReactDOM from 'react-dom';
 import CreativeHyperverse from './CreativeHyperverse';
 import ShowcaseGallery from './ShowcaseGallery';
@@ -28,7 +28,11 @@ const layers: Layer[] = [
 
 const InfoOverlay: React.FC<{ layer: Layer, isVisible: boolean }> = ({ layer, isVisible }) => {
     return (
-        <div className={`info-overlay transition-all duration-1000 ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`} role="status" aria-live="polite">
+        <div 
+            className={`info-overlay transition-all duration-1000 ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`} 
+            role="status" 
+            aria-live="polite"
+        >
             <div className="mb-4">
                 <layer.logo className="w-16 h-16 mx-auto mb-4 text-[var(--theme-accent1)] drop-shadow-[0_0_20px_var(--theme-glow-heavy)]" />
             </div>
@@ -49,15 +53,17 @@ const HUD: React.FC<{ activeLayer: LayerId, setActiveLayer: (layer: LayerId) => 
     return (
         <div className="hud-container animate-fade-in">
             {layers.map(layer => (
-                <button 
-                    key={layer.id}
-                    onClick={() => setActiveLayer(layer.id)}
-                    className={`hud-button ${activeLayer === layer.id ? 'active' : ''}`}
-                    title={layer.name}
-                    aria-label={`View ${layer.name}`}
-                >
-                    <layer.logo className="w-8 h-8" />
-                </button>
+                layer.id !== 'genesis' && (
+                    <button 
+                        key={layer.id}
+                        onClick={() => setActiveLayer(layer.id)}
+                        className={`hud-button ${activeLayer === layer.id ? 'active' : ''}`}
+                        title={layer.name}
+                        aria-label={`View ${layer.name}`}
+                    >
+                        <layer.logo className="w-8 h-8" />
+                    </button>
+                )
             ))}
             <button
                 onClick={() => setActiveLayer('showcase')}
@@ -79,19 +85,47 @@ const HUD: React.FC<{ activeLayer: LayerId, setActiveLayer: (layer: LayerId) => 
     );
 };
 
-
 const LiveSystem: React.FC = () => {
     const [activeLayer, setActiveLayer] = useState<LayerId>('genesis');
     const [genesisCompleted, setGenesisCompleted] = useState(false);
     const [showInfo, setShowInfo] = useState(true);
-    const infoTimeoutRef = React.useRef<number | null>(null);
+    const infoTimeoutRef = useRef<number | null>(null);
 
-    const backgroundContainer = document.getElementById('background-visualization');
+    // Handle genesis completion
+    const handleGenesisComplete = useCallback(() => {
+        setGenesisCompleted(true);
+        setActiveLayer('raindrop');
+    }, []);
+
+    // Handle info overlay timeout
+    useEffect(() => {
+        if (!genesisCompleted) return;
+
+        if (infoTimeoutRef.current) {
+            clearTimeout(infoTimeoutRef.current);
+        }
+        
+        setShowInfo(true);
+        
+        if (activeLayer !== 'hyperverse' && activeLayer !== 'showcase') {
+            infoTimeoutRef.current = window.setTimeout(() => {
+                setShowInfo(false);
+            }, 4000);
+        }
+
+        return () => {
+            if (infoTimeoutRef.current) {
+                clearTimeout(infoTimeoutRef.current);
+            }
+        };
+    }, [activeLayer, genesisCompleted]);
 
     // Keyboard navigation
     useEffect(() => {
+        if (!genesisCompleted) return;
+
         const handleKeyPress = (e: KeyboardEvent) => {
-            if (!genesisCompleted || activeLayer === 'hyperverse' || activeLayer === 'showcase') return;
+            if (activeLayer === 'hyperverse' || activeLayer === 'showcase') return;
             
             const layerIds: LayerId[] = ['raindrop', 'vultr', 'elevenlabs', 'cerebras_gemini'];
             const currentIndex = layerIds.indexOf(activeLayer);
@@ -110,6 +144,11 @@ const LiveSystem: React.FC = () => {
             } else if (e.key === 'g' || e.key === 'G') {
                 e.preventDefault();
                 setActiveLayer('showcase');
+            } else if (e.key === 'Escape') {
+                if (activeLayer === 'hyperverse' || activeLayer === 'showcase') {
+                    e.preventDefault();
+                    setActiveLayer('raindrop');
+                }
             }
         };
 
@@ -117,61 +156,50 @@ const LiveSystem: React.FC = () => {
         return () => window.removeEventListener('keydown', handleKeyPress);
     }, [genesisCompleted, activeLayer]);
 
-    useEffect(() => {
-        if (infoTimeoutRef.current) {
-            clearTimeout(infoTimeoutRef.current);
-        }
-        setShowInfo(true);
-        infoTimeoutRef.current = window.setTimeout(() => {
-            setShowInfo(false);
-        }, 4000); // Show info for 4 seconds
-
-        return () => {
-            if (infoTimeoutRef.current) {
-                clearTimeout(infoTimeoutRef.current);
-            }
-        };
-    }, [activeLayer]);
-
-
-    const handleGenesisComplete = () => {
-        setGenesisCompleted(true);
-        setActiveLayer('raindrop');
-    };
-
     const currentLayer = layers.find(l => l.id === activeLayer);
+    const backgroundContainer = document.getElementById('background-visualization');
 
     return (
         <>
             {!genesisCompleted && <GenesisDemo onComplete={handleGenesisComplete} />}
             
-            <div className={`min-h-screen relative transition-opacity duration-1000 ${genesisCompleted ? 'opacity-100' : 'opacity-0'}`}>
+            <div className={`min-h-screen relative transition-opacity duration-1000 ${genesisCompleted ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
                 
-                {backgroundContainer && layers.map(layer => (
-                    layer.id !== 'genesis' && ReactDOM.createPortal(
-                        <div className={`scene-container ${activeLayer === layer.id ? 'active' : ''}`}>
-                            <layer.visualization />
-                        </div>,
-                        backgroundContainer
+                {/* Background Visualizations */}
+                {backgroundContainer && genesisCompleted && layers.map(layer => (
+                    layer.id !== 'genesis' && (
+                        <React.Fragment key={layer.id}>
+                            {ReactDOM.createPortal(
+                                <div className={`scene-container ${activeLayer === layer.id ? 'active' : ''}`}>
+                                    <layer.visualization />
+                                </div>,
+                                backgroundContainer
+                            )}
+                        </React.Fragment>
                     )
                 ))}
 
-                <header className="fixed top-4 left-4 z-10">
+                {/* Header Logo */}
+                <header className="fixed top-4 left-4 z-10 animate-fade-in">
                    <VultraDropLogo className="h-10 w-auto text-[var(--theme-text-title)] drop-shadow-[0_0_15px_var(--theme-glow-heavy)]" />
                 </header>
 
+                {/* Info Overlay */}
                 <main>
-                    {currentLayer && activeLayer !== 'hyperverse' && (
+                    {currentLayer && activeLayer !== 'hyperverse' && activeLayer !== 'showcase' && (
                         <InfoOverlay layer={currentLayer} isVisible={showInfo} />
                     )}
                 </main>
 
-                <div className="fixed top-4 right-4 flex items-center gap-4 z-30">
+                {/* Theme Switcher */}
+                <div className="fixed top-4 right-4 flex items-center gap-4 z-30 animate-fade-in">
                     <ThemeSwitcher />
                 </div>
                 
+                {/* HUD Navigation */}
                 {genesisCompleted && <HUD activeLayer={activeLayer} setActiveLayer={setActiveLayer} />}
                 
+                {/* Modal Views */}
                 {activeLayer === 'hyperverse' && <CreativeHyperverse onClose={() => setActiveLayer('raindrop')} />}
                 {activeLayer === 'showcase' && <ShowcaseGallery onClose={() => setActiveLayer('raindrop')} />}
             </div>

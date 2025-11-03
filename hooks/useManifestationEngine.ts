@@ -1,12 +1,10 @@
-
 import { useState, useCallback } from 'react';
 import { Manifestation, Clip, ImageSettings } from '../types';
-import { generateScript } from '../services/geminiService';
-import { generateImageSequence } from '../services/geminiService';
+import { generateScript, generateImageSequence } from '../services/geminiService';
 import { generateNarration } from '../services/elevenLabsService';
 import { generateMusic } from '../services/musicService';
 
-const SCRIPT_LENGTH = 10; // As specified in the geminiService prompt
+const SCRIPT_LENGTH = 10;
 
 export const useManifestationEngine = () => {
     const [manifestation, setManifestation] = useState<Manifestation | null>(null);
@@ -24,6 +22,7 @@ export const useManifestationEngine = () => {
             // 1. Generate Script
             setProgressMessage('Generating narrative script...');
             const script = await generateScript(vision);
+            
             if (script.length !== SCRIPT_LENGTH) {
                 console.warn(`Expected ${SCRIPT_LENGTH} scenes, but got ${script.length}. Using what was returned.`);
             }
@@ -52,31 +51,36 @@ export const useManifestationEngine = () => {
             setProgressMessage('Manifesting scenes...');
 
             const clipPromises = script.map(async (scriptText, index) => {
-                // Update status to 'generating' for this clip
-                setManifestation(prev => {
-                    if (!prev) return prev;
-                    const newClips = [...prev.clips];
-                    newClips[index] = { ...newClips[index], status: 'generating' };
-                    return { ...prev, clips: newClips };
-                });
-
                 try {
-                    const [imageUrls, narrationUrl] = await Promise.all([
-                        generateImageSequence(`${vision}, ${scriptText}`, settings),
-                        generateNarration(scriptText)
-                    ]);
-                    
-                    // Update status to 'completed'
-                     setManifestation(prev => {
+                    // Update status to 'generating' for this clip
+                    setManifestation(prev => {
                         if (!prev) return prev;
                         const newClips = [...prev.clips];
-                        newClips[index] = { ...newClips[index], status: 'completed', urls: imageUrls, narrationUrl };
+                        newClips[index] = { ...newClips[index], status: 'generating' };
+                        return { ...prev, clips: newClips };
+                    });
+
+                    // Generate images and narration in parallel
+                    const [imageUrls, narrationUrl] = await Promise.all([
+                        generateImageSequence(scriptText, settings),
+                        generateNarration(scriptText)
+                    ]);
+
+                    // Update clip with results
+                    setManifestation(prev => {
+                        if (!prev) return prev;
+                        const newClips = [...prev.clips];
+                        newClips[index] = {
+                            ...newClips[index],
+                            urls: imageUrls,
+                            narrationUrl,
+                            status: 'completed'
+                        };
                         return { ...prev, clips: newClips };
                     });
                 } catch (clipError: any) {
                     console.error(`Error generating clip ${index}:`, clipError);
-                     // Update status to 'error'
-                     setManifestation(prev => {
+                    setManifestation(prev => {
                         if (!prev) return prev;
                         const newClips = [...prev.clips];
                         newClips[index] = { ...newClips[index], status: 'error' };
@@ -86,13 +90,12 @@ export const useManifestationEngine = () => {
             });
 
             await Promise.all(clipPromises);
-            
-            setProgressMessage('Manifestation complete.');
+            setProgressMessage('Manifestation complete!');
+            setIsGenerating(false);
 
-        } catch (e: any) {
-            console.error("Manifestation failed:", e);
-            setError(e.message || "An unknown error occurred during manifestation.");
-        } finally {
+        } catch (err: any) {
+            console.error('Manifestation error:', err);
+            setError(err.message || 'An unexpected error occurred during manifestation.');
             setIsGenerating(false);
         }
     }, []);
@@ -100,10 +103,8 @@ export const useManifestationEngine = () => {
     const resetManifestation = useCallback(() => {
         setManifestation(null);
         setError(null);
-        setIsGenerating(false);
         setProgressMessage('');
     }, []);
-
 
     return {
         manifestation,
@@ -111,6 +112,6 @@ export const useManifestationEngine = () => {
         error,
         progressMessage,
         manifestVision,
-        resetManifestation
+        resetManifestation,
     };
 };

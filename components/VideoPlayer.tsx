@@ -4,6 +4,7 @@ import { Clip } from '../types';
 
 const GeneratingAnimation: React.FC = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const animationFrameRef = useRef<number | null>(null);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -19,7 +20,7 @@ const GeneratingAnimation: React.FC = () => {
 
         const width = rect.width;
         const height = rect.height;
-        const particles: { x: number; y: number; vx: number; vy: number; life: number; }[] = [];
+        const particles: { x: number; y: number; vx: number; vy: number; life: number }[] = [];
         const particleCount = 200;
 
         for (let i = 0; i < particleCount; i++) {
@@ -32,9 +33,8 @@ const GeneratingAnimation: React.FC = () => {
             });
         }
 
-        let animationFrameId: number;
-        const animate = (time: number) => {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const animate = () => {
+            ctx.clearRect(0, 0, width, height);
             
             const centerX = width / 2;
             const centerY = height / 2;
@@ -46,7 +46,6 @@ const GeneratingAnimation: React.FC = () => {
 
                 p.vx += dx / dist * 0.05;
                 p.vy += dy / dist * 0.05;
-
                 p.vx *= 0.98;
                 p.vy *= 0.98;
 
@@ -61,111 +60,126 @@ const GeneratingAnimation: React.FC = () => {
                     p.vy = (Math.random() - 0.5);
                     p.life = Math.random() * 100;
                 }
-                
-                const opacity = Math.max(0, p.life / 100);
+
+                const alpha = p.life / 100;
+                ctx.fillStyle = `rgba(6, 182, 212, ${alpha * 0.8})`;
                 ctx.beginPath();
-                ctx.arc(p.x, p.y, 1, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(107, 230, 255, ${opacity})`;
+                ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
                 ctx.fill();
             });
 
-            animationFrameId = requestAnimationFrame(animate);
+            animationFrameRef.current = requestAnimationFrame(animate);
         };
-        animate(0);
 
-        return () => cancelAnimationFrame(animationFrameId);
+        animate();
+
+        return () => {
+            if (animationFrameRef.current) {
+                cancelAnimationFrame(animationFrameRef.current);
+            }
+        };
     }, []);
 
-    return (
-        <div className="flex flex-col items-center justify-center h-full w-full">
-            <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
-            <p className="relative text-xs text-cyan-200 font-light z-10">Manifesting Scene...</p>
-        </div>
-    );
+    return <canvas ref={canvasRef} className="w-full h-full" />;
 };
 
 interface ClipDisplayProps {
-  clip: Clip;
-  onDownload: (urls: string[], id: number) => void;
-  isActive: boolean;
+    clip: Clip;
+    isActive: boolean;
+    onDownload: () => void;
 }
 
-const ClipDisplay: React.FC<ClipDisplayProps> = ({ clip, onDownload, isActive }) => {
-  const { status, urls, id } = clip;
-  const [currentIndex, setCurrentIndex] = useState(0);
+const ClipDisplay: React.FC<ClipDisplayProps> = ({ clip, isActive, onDownload }) => {
+    const [currentFrameIndex, setCurrentFrameIndex] = useState(0);
+    const intervalRef = useRef<number | null>(null);
 
-  useEffect(() => {
-    if (status === 'completed' && urls && urls.length > 1) {
-      const interval = setInterval(() => {
-        setCurrentIndex(prevIndex => (prevIndex + 1) % urls.length);
-      }, 700); // Animation speed
-      return () => clearInterval(interval);
-    }
-  }, [status, urls]);
-
-  const renderContent = () => {
-    switch (status) {
-      case 'generating':
-        return <GeneratingAnimation />;
-      case 'completed':
-        if (urls && urls.length > 0) {
-          return (
-            <div className="relative w-full h-full group">
-               {urls.map((url, index) => (
-                <img
-                    key={index}
-                    src={url}
-                    alt={`Generated clip ${id} frame ${index + 1}`}
-                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-in-out ${index === currentIndex ? 'opacity-100' : 'opacity-0'}`}
-                />
-              ))}
-              <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <button
-                    onClick={() => onDownload(urls, id)}
-                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all duration-300 backdrop-blur-sm shadow-lg transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-                    aria-label={`Download scene ${id + 1} images`}
-                    >
-                    <DownloadIcon className="w-5 h-5" />
-                    Download
-                </button>
-              </div>
-            </div>
-          );
+    useEffect(() => {
+        if (clip.status === 'completed' && clip.urls && clip.urls.length > 1) {
+            intervalRef.current = window.setInterval(() => {
+                setCurrentFrameIndex(prev => (prev + 1) % clip.urls!.length);
+            }, 500);
         }
-        return <p className="flex items-center justify-center h-full text-gray-400">Error: URLs missing.</p>;
-      case 'error':
-        return (
-            <div className="flex flex-col items-center justify-center h-full text-center p-2">
-                <p className="text-red-400 text-sm font-semibold">Scene Failed</p>
-                <p className="text-xs text-gray-500 mt-1">Please try again.</p>
-            </div>
-        );
-      case 'idle':
-      default:
-        return (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-gray-600 text-sm font-orbitron">Awaiting Vision...</p>
-          </div>
-        );
-    }
-  };
 
-  return (
-    <div 
-      className={`panel-corners aspect-video bg-black/50 rounded-lg shadow-lg overflow-hidden border-2 transition-all duration-500 hover:shadow-2xl hover:shadow-[var(--theme-glow-light)] ${isActive ? 'border-[var(--theme-accent2)] shadow-2xl shadow-[var(--theme-glow-heavy)] scale-105 ring-4 ring-[var(--theme-accent2)]/50' : 'border-[var(--theme-border-color)]'}`}
-      role="article"
-      aria-label={`Scene ${id + 1} - ${status}`}
-    >
-        <div className="w-full h-full relative">
-          {renderContent()}
-          {isActive && (
-            <div className="absolute top-2 right-2 bg-[var(--theme-accent2)] text-white px-2 py-1 rounded-full text-xs font-bold animate-pulse">
-              PLAYING
+        return () => {
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+            }
+        };
+    }, [clip.status, clip.urls]);
+
+    const renderContent = () => {
+        if (clip.status === 'idle') {
+            return (
+                <div className="flex items-center justify-center h-full text-[var(--theme-text-subtitle)]">
+                    <p>Waiting...</p>
+                </div>
+            );
+        }
+
+        if (clip.status === 'generating') {
+            return (
+                <div className="relative w-full h-full">
+                    <GeneratingAnimation />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <p className="text-cyan-200 font-semibold animate-pulse">Generating...</p>
+                    </div>
+                </div>
+            );
+        }
+
+        if (clip.status === 'error') {
+            return (
+                <div className="flex items-center justify-center h-full text-red-400">
+                    <p>Error generating clip</p>
+                </div>
+            );
+        }
+
+        if (clip.status === 'completed' && clip.urls) {
+            return (
+                <div className="relative w-full h-full group">
+                    <img
+                        src={clip.urls[currentFrameIndex]}
+                        alt={`Clip ${clip.id + 1} - Frame ${currentFrameIndex + 1}`}
+                        className="w-full h-full object-cover rounded-lg"
+                    />
+                    {clip.urls.length > 1 && (
+                        <div className="absolute bottom-2 right-2 bg-black/70 px-2 py-1 rounded text-xs text-white">
+                            {currentFrameIndex + 1} / {clip.urls.length}
+                        </div>
+                    )}
+                    <button
+                        onClick={onDownload}
+                        className="absolute top-2 right-2 p-2 bg-black/70 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-black/90 focus:outline-none focus:ring-2 focus:ring-[var(--theme-accent1)]"
+                        title="Download clip"
+                        aria-label="Download clip frames"
+                    >
+                        <DownloadIcon className="w-4 h-4 text-white" />
+                    </button>
+                </div>
+            );
+        }
+
+        return null;
+    };
+
+    return (
+        <div
+            className={`relative rounded-lg overflow-hidden border-2 transition-all duration-300 ${
+                isActive
+                    ? 'border-[var(--theme-accent1)] shadow-[0_0_20px_var(--theme-glow-heavy)] scale-105'
+                    : 'border-[var(--theme-border-color)]'
+            }`}
+            style={{ aspectRatio: '16/9', minHeight: '200px' }}
+        >
+            <div className="absolute inset-0 bg-[var(--theme-bg-secondary)]">
+                {renderContent()}
             </div>
-          )}
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
+                <p className="text-xs text-white line-clamp-2">{clip.scriptText}</p>
+            </div>
         </div>
-    </div>
-  );
+    );
 };
 
 export default ClipDisplay;
