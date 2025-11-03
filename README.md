@@ -1,7 +1,7 @@
 # VultraDrop: The Anatomy of a Digital Lifeform 🌌
 
 <p align="center">
-  <img src="https://i.imgur.com/72g0gYg.png" alt="VultraDrop Architectural Blueprint Banner"/>
+  <img src="/public/assets/vultradrop-blueprint.svg" alt="VultraDrop Architectural Blueprint Banner"/>
 </p>
 
 <p align="center">
@@ -21,11 +21,11 @@
 ## 🧬 The Digital DNA: A Technology Showcase
 <p align="center">VultraDrop is not born from a single spark, but from a constellation of powerful intelligences. Here are the core forces that give our lifeform its being. ✨</p>
 <p align="center">
-<img src="https://i.imgur.com/ZOk2I0Q.png" alt="Google Gemini Banner"/>
-<img src="https://i.imgur.com/Q2xQ2z1.png" alt="ElevenLabs Banner"/>
-<img src="https://i.imgur.com/eB3sY4M.png" alt="Vultr Banner"/>
-<img src="https://i.imgur.com/8Qo9D8y.png" alt="LiquidMetal Raindrop Banner"/>
-<img src="https://i.imgur.com/3p8y6N4.png" alt="Cerebras Banner"/>
+<img src="/public/assets/gemini-banner.svg" alt="Google Gemini Banner"/>
+<img src="/public/assets/elevenlabs-banner.svg" alt="ElevenLabs Banner"/>
+<img src="/public/assets/vultr-banner.svg" alt="Vultr Banner"/>
+<img src="/public/assets/raindrop-banner.svg" alt="LiquidMetal Raindrop Banner"/>
+<img src="/public/assets/cerebras-banner.svg" alt="Cerebras Banner"/>
 </p>
 
 ---
@@ -65,7 +65,7 @@ Every visionary—be it a film director 🎬, a game designer 🎮, an author �
 **This is the "Old Way"—a chaotic, disconnected nightmare:**
 
 <p align="center">
-  <img src="https://i.imgur.com/sSgchgJ.png" alt="Diagram showing the chaotic old process vs the streamlined VultraDrop process"/>
+  <img src="/public/assets/problem-solution-flow.svg" alt="Diagram showing the chaotic old process vs the streamlined VultraDrop process"/>
 </p>
 
 *   **😭 The Great Divide:** A vision must be painfully translated into a script. The script is then handed off to a storyboard artist. The storyboards go to a concept artist. The concept art goes to an animator. Each step is a different tool, a different team, a different language. It's a logistical mess!
@@ -112,12 +112,12 @@ The full VultraDrop paradigm is a millennia-ahead concept where intelligence is 
 
 ## 🎬 The Living Glyphs: Our Partners in Creation
 
-Words are not enough. Links are not enough. You need to see the energy. Here are the official glyphs of the core intelligences that power VultraDrop, embedded directly for you to experience. They are alive! 🔥
+Words are not enough. Links are not enough. You need to **see the energy**. Here are the official glyphs of the core intelligences that power VultraDrop, embedded directly for you to experience. They are alive! 🔥
 
 <p align="center">
   <strong>Google Gemini 🧠</strong>
   <br/>
-  <img src="https://i.imgur.com/Q2xQ2z1.png" alt="Gemini Animation" width="250"/>
+  <img src="/public/assets/gemini-animation.svg" alt="Gemini Animation" width="250"/>
   <br/>
   <small><em>The Mind. The storyteller. The core of reason and imagination.</em></small>
   <br/>
@@ -126,7 +126,7 @@ Words are not enough. Links are not enough. You need to see the energy. Here are
 <p align="center">
   <strong>ElevenLabs 🗣️</strong>
   <br/>
-   <img src="https://i.imgur.com/ZOk2I0Q.png" alt="ElevenLabs Animation" width="250"/>
+   <img src="/public/assets/elevenlabs-animation.svg" alt="ElevenLabs Animation" width="250"/>
   <br/>
   <small><em>The Voice. The soul. The source of charisma and emotional presence.</em></small>
   <br/>
@@ -140,7 +140,7 @@ Words are not enough. Links are not enough. You need to see the energy. Here are
 You asked how we *actually* used the services. How the code *actually* builds this world. Here is the blueprint. This is not a description; this is the **schematic of a soul.**
 
 <p align="center">
-  <img src="https://i.imgur.com/fJq3R6g.png" alt="Full Manifestation Flow Diagram"/>
+  <img src="/public/assets/full-manifestation-flow.svg" alt="Full Manifestation Flow Diagram"/>
 </p>
 
 ### The Code-to-Concept Bridge 🌉
@@ -352,7 +352,7 @@ This is the vision for a fully interactive demo workflow for VultraDrop that is 
 ## 🎮 Your Interface: What Can You Do in the Portal?
 
 <p align="center">
-  <img src="https://i.imgur.com/fJq3R6g.png" alt="Creative Hyperverse Process"/>
+  <img src="/public/assets/full-manifestation-flow.svg" alt="Creative Hyperverse Process"/>
 </p>
 
 This portal is your **Manifestation Sanctum**. It is where you become a co-creator.
@@ -428,7 +428,7 @@ VultraDrop is built upon four conceptual pillars, each powered by a real-world t
 
 ### Using LiquidMetal Raindrop with Vultr for the Backend 🌩️
 
-LiquidMetal AI's **Raindrop** platform is designed to provide Claude-native infrastructure to developers, especially for AI applications, and often leverages cloud providers like **Vultr** for scalable, high-performance computing resources. Raindrop is all about simplifying the backend deployment and management, especially for AI/ML inference workloads. This is how the "Garden" and "Sinew" of VultraDrop would be brought to life.
+LiquidMetal AI's **Raindrop** platform is designed to provide Claude-native infrastructure to developers, especially for AI applications, and often leverages cloud providers like **Vultr** for scalable, high-performance computing resources. Raindrop is all about simplifying the backend deployment and management, especially for AI/ML inference workloads. This is how the "Garden" 🌳 and "Sinew" 🌐 of VultraDrop would be brought to life.
 
 #### 1. ⚙️ Understand the Integration
 
